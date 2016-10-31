@@ -1,18 +1,21 @@
-﻿using CommunityCoreLibrary;
+﻿using System;
+using System.Collections.Generic;
+using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 
 namespace Combat_Realism
 {
-    public class ITabInjector : SpecialInjector
+    [SpecialInjectorSequencer(InjectionSequence.MainLoad, InjectionTiming.SpecialInjectors)]
+    public class TabInjector : SpecialInjector
     {
         #region Methods
 
         public override bool Inject()
         {
             // get reference to lists of itabs
-            var itabs = ThingDefOf.Human.inspectorTabs;
-            var itabsResolved = ThingDefOf.Human.inspectorTabsResolved;
+            List<Type> itabs = ThingDefOf.Human.inspectorTabs;
+            List<ITab> itabsResolved = ThingDefOf.Human.inspectorTabsResolved;
 
             /*
 
@@ -31,21 +34,21 @@ namespace Combat_Realism
             */
 
             // replace ITab in the unresolved list
-            var index = itabs.IndexOf( typeof( ITab_Pawn_Gear ) );
-            if ( index != -1 )
+            int index = itabs.IndexOf(typeof(ITab_Pawn_Gear));
+            if (index != -1)
             {
-                itabs.Remove( typeof( ITab_Pawn_Gear ) );
-                itabs.Insert( index, typeof( ITab_Inventory ) );
+                itabs.Remove(typeof(ITab_Pawn_Gear));
+                itabs.Insert(index, typeof(ITab_Inventory));
             }
 
             // replace resolved ITab, if needed.
-            var oldGearTab = ITabManager.GetSharedInstance( typeof( ITab_Pawn_Gear ) );
-            var newGearTab = ITabManager.GetSharedInstance( typeof( ITab_Inventory ) );
-            if ( !itabsResolved.NullOrEmpty() && itabsResolved.Contains( oldGearTab ) )
+            ITab oldGearTab = ITabManager.GetSharedInstance(typeof(ITab_Pawn_Gear));
+            ITab newGearTab = ITabManager.GetSharedInstance(typeof(ITab_Inventory));
+            if (!itabsResolved.NullOrEmpty() && itabsResolved.Contains(oldGearTab))
             {
-                int resolvedIndex = itabsResolved.IndexOf( oldGearTab );
-                itabsResolved.Insert( resolvedIndex, newGearTab );
-                itabsResolved.Remove( oldGearTab );
+                int resolvedIndex = itabsResolved.IndexOf(oldGearTab);
+                itabsResolved.Insert(resolvedIndex, newGearTab);
+                itabsResolved.Remove(oldGearTab);
             }
 
             return true;

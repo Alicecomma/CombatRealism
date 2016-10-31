@@ -27,11 +27,11 @@ namespace Combat_Realism
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.LookValue<float>(ref this.aimingAccuracy, "aimingAccuracy");
-            Scribe_Values.LookValue<float>(ref this.aimEfficiency, "aimEfficiency");
-            Scribe_Values.LookValue<float>(ref this.lightingShift, "lightingShift");
-            Scribe_Values.LookValue<float>(ref this.weatherShift, "weatherShift");
-            Scribe_Values.LookValue<int>(ref this.lifetimeTicks, "lifetimeTicks");
+            Scribe_Values.LookValue<float>(ref aimingAccuracy, "aimingAccuracy");
+            Scribe_Values.LookValue<float>(ref aimEfficiency, "aimEfficiency");
+            Scribe_Values.LookValue<float>(ref lightingShift, "lightingShift");
+            Scribe_Values.LookValue<float>(ref weatherShift, "weatherShift");
+            Scribe_Values.LookValue<int>(ref lifetimeTicks, "lifetimeTicks");
         }
 
         public override void Tick()
@@ -39,7 +39,7 @@ namespace Combat_Realism
             lifetimeTicks--;
             if (lifetimeTicks <= 0)
             {
-                this.Destroy();
+                Destroy();
             }
         }
 
@@ -50,9 +50,9 @@ namespace Combat_Realism
                 CompAttachBase comp = parent.TryGetComp<CompAttachBase>();
                 if (comp != null)
                 {
-                    if (parent.HasAttachment(ThingDef.Named(ArtilleryMarker.MarkerDef)))
+                    if (parent.HasAttachment(ThingDef.Named(MarkerDef)))
                     {
-                        ArtilleryMarker oldMarker = (ArtilleryMarker)parent.GetAttachment(ThingDef.Named(ArtilleryMarker.MarkerDef));
+                        ArtilleryMarker oldMarker = (ArtilleryMarker)parent.GetAttachment(ThingDef.Named(MarkerDef));
                         oldMarker.Destroy();
                     }
                 }

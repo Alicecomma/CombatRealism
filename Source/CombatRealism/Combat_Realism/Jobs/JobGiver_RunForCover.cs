@@ -11,7 +11,7 @@ namespace Combat_Realism
 {
     class JobGiver_RunForCover : ThinkNode_JobGiver
     {
-        private const float maxCoverDist = 10f; //Maximum distance to run for cover to
+        private const float maxCoverDist = 15f; //Maximum distance to run for cover to
 
         protected override Job TryGiveJob(Pawn pawn)
         {
@@ -26,7 +26,7 @@ namespace Combat_Realism
             IntVec3 coverPosition;
 
             //Try to find cover position to move up to
-            if (!this.GetCoverPositionFrom(pawn, comp.suppressorLoc, maxCoverDist, out coverPosition))
+            if (!GetCoverPositionFrom(pawn, comp.suppressorLoc, maxCoverDist, out coverPosition))
             {
                 return null;
             }
@@ -39,7 +39,7 @@ namespace Combat_Realism
 
             //Tell pawn to move to position
             Find.PawnDestinationManager.ReserveDestinationFor(pawn, coverPosition);
-            return new Job(DefDatabase<JobDef>.GetNamed("RunForCover", true), coverPosition)
+            return new Job(CR_JobDefOf.RunForCover, coverPosition)
             {
                 locomotionUrgency = LocomotionUrgency.Sprint,
                 playerForced = true

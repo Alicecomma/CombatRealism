@@ -14,7 +14,7 @@ namespace Combat_Realism
         {
             get
             {
-                return (CompProperties_Charges)this.props;
+                return (CompProperties_Charges)props;
             }
         }
 

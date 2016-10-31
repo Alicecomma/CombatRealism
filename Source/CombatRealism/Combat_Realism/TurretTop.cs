@@ -30,66 +30,66 @@ namespace Combat_Realism
 		{
 			get
 			{
-				return this.curRotationInt;
+				return curRotationInt;
 			}
 			set
 			{
-				this.curRotationInt = value;
-				if (this.curRotationInt > 360f)
+				curRotationInt = value;
+				if (curRotationInt > 360f)
 				{
-					this.curRotationInt -= 360f;
+					curRotationInt -= 360f;
 				}
-				if (this.curRotationInt < 0f)
+				if (curRotationInt < 0f)
 				{
-					this.curRotationInt += 360f;
+					curRotationInt += 360f;
 				}
 			}
 		}
 
         public TurretTopCR(Building_Turret ParentTurret)
 		{
-			this.parentTurret = ParentTurret;
+			parentTurret = ParentTurret;
 		}
 
 		public void TurretTopTick()
 		{
-			TargetInfo currentTarget = this.parentTurret.CurrentTarget;
+			TargetInfo currentTarget = parentTurret.CurrentTarget;
 			if (currentTarget.IsValid)
 			{
-				float curRotation = (currentTarget.Cell.ToVector3Shifted() - this.parentTurret.DrawPos).AngleFlat();
-				this.CurRotation = curRotation;
-				this.ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
+				float curRotation = (currentTarget.Cell.ToVector3Shifted() - parentTurret.DrawPos).AngleFlat();
+				CurRotation = curRotation;
+				ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
 			}
-			else if (this.ticksUntilIdleTurn > 0)
+			else if (ticksUntilIdleTurn > 0)
 			{
-				this.ticksUntilIdleTurn--;
-				if (this.ticksUntilIdleTurn == 0)
+				ticksUntilIdleTurn--;
+				if (ticksUntilIdleTurn == 0)
 				{
 					if (Rand.Value < 0.5f)
 					{
-						this.idleTurnClockwise = true;
+						idleTurnClockwise = true;
 					}
 					else
 					{
-						this.idleTurnClockwise = false;
+						idleTurnClockwise = false;
 					}
-					this.idleTurnTicksLeft = 140;
+					idleTurnTicksLeft = 140;
 				}
 			}
 			else
 			{
-				if (this.idleTurnClockwise)
+				if (idleTurnClockwise)
 				{
-					this.CurRotation += 0.26f;
+					CurRotation += 0.26f;
 				}
 				else
 				{
-					this.CurRotation -= 0.26f;
+					CurRotation -= 0.26f;
 				}
-				this.idleTurnTicksLeft--;
-				if (this.idleTurnTicksLeft <= 0)
+				idleTurnTicksLeft--;
+				if (idleTurnTicksLeft <= 0)
 				{
-					this.ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
+					ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
 				}
 			}
 		}

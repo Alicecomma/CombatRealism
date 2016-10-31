@@ -6,3 +6,6 @@ C:\Games\RimWorld1249Win\Mods\CombatRealism\Assemblies\CombatRealism.dll
 C:\Users\tijn\Documents\CombatRealism\Assemblies\CombatRealism.dll
 C:\Users\tijn\Documents\CombatRealism\Source\CombatRealism\obj\Debug\Combat_Realism.csprojResolveAssemblyReference.cache
 C:\Users\tijn\Documents\CombatRealism\Source\CombatRealism\obj\Debug\CombatRealism.dll
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\CombatRealism-master\Source\CombatRealism\obj\Debug\Combat_Realism.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\CombatRealism-master\Source\CombatRealism\obj\Debug\CombatRealism.dll
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\CombatRealism-master\Assemblies\CombatRealism.dll

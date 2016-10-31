@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -16,6 +17,7 @@ namespace Combat_Realism.Detours
             return pawn.IsColonistPlayerControlled && pawn.drafter.CanTakeOrderedJob();
         }
 
+        [DetourClassMethod(typeof(FloatMenuMakerMap), "ChoicesAtFor", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static List<FloatMenuOption> ChoicesAtFor(Vector3 clickPos, Pawn pawn)
         {
             IntVec3 clickCell = IntVec3.FromVector3(clickPos);
@@ -79,7 +81,7 @@ namespace Combat_Realism.Detours
                         floatMenuOption.autoTakeable = true;
                         floatMenuOption.action = new Action(delegate
                         {
-                            MoteThrower.ThrowStatic(attackTarg.Thing.DrawPos, ThingDefOf.Mote_FeedbackAttack, 1f);
+                            MoteMaker.MakeStaticMote(attackTarg.Thing.DrawPos, ThingDefOf.Mote_FeedbackAttack, 1f);
                             rangedAct();
                         });
                     }
@@ -116,7 +118,7 @@ namespace Combat_Realism.Detours
                 {
                     floatMenuOption2.action = delegate
                     {
-                        MoteThrower.ThrowStatic(attackTarg.Thing.DrawPos, ThingDefOf.Mote_FeedbackAttack, 1f);
+                        MoteMaker.MakeStaticMote(attackTarg.Thing.DrawPos, ThingDefOf.Mote_FeedbackAttack, 1f);
                         meleeAct();
                     };
                 }
@@ -186,7 +188,7 @@ namespace Combat_Realism.Detours
                                 Job job = new Job(JobDefOf.Goto, intVec);
                                 job.playerForced = true;
                                 pawn.drafter.TakeOrderedJob(job);
-                                MoteThrower.ThrowStatic(intVec, ThingDefOf.Mote_FeedbackGoto, 1f);
+                                MoteMaker.MakeStaticMote(intVec, ThingDefOf.Mote_FeedbackGoto, 1f);
                             };
                             opts.Add(new FloatMenuOption("GoHere".Translate(), action2, MenuOptionPriority.Low, null, null, 0f, null)
                             {
@@ -213,7 +215,7 @@ namespace Combat_Realism.Detours
                 if (t.def.ingestible != null && pawn.RaceProps.CanEverEat(t) && t.IngestibleNow)
                 {
                     FloatMenuOption item;
-                    if (t.def.ingestible.isPleasureDrug && num < 0)
+                    if (t.def.IsPleasureDrug && num < 0)
                     {
                         item = new FloatMenuOption("ConsumeThing".Translate(new object[]
                         {
@@ -246,7 +248,7 @@ namespace Combat_Realism.Detours
                         {
                             t.SetForbidden(false, true);
                             Job job = new Job(JobDefOf.Ingest, t);
-                            job.maxNumToCarry = FoodUtility.WillEatStackCountOf(pawn, t.def);
+                            job.maxNumToCarry = FoodUtility.WillIngestStackCountOf(pawn, t.def);
                             pawn.drafter.TakeOrderedJob(job);
                         }, MenuOptionPriority.Medium, null, null, 0f, null);
                     }
@@ -287,7 +289,7 @@ namespace Combat_Realism.Detours
                                 job.maxNumToCarry = 1;
                                 job.playerForced = true;
                                 pawn.drafter.TakeOrderedJob(job);
-                                ConceptDatabase.KnowledgeDemonstrated(ConceptDefOf.Rescuing, KnowledgeAmount.Total);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.Rescuing, KnowledgeAmount.Total);
                             }, MenuOptionPriority.Medium, null, victim2, 0f, null));
                         }
                         if (victim.MentalStateDef != null || (victim.RaceProps.Humanlike && victim.Faction != Faction.OfPlayer))
@@ -308,7 +310,7 @@ namespace Combat_Realism.Detours
                                 job.maxNumToCarry = 1;
                                 job.playerForced = true;
                                 pawn.drafter.TakeOrderedJob(job);
-                                ConceptDatabase.KnowledgeDemonstrated(ConceptDefOf.Capturing, KnowledgeAmount.Total);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.Capturing, KnowledgeAmount.Total);
                             }, MenuOptionPriority.Medium, null, victim2, 0f, null));
                         }
                     }
@@ -437,8 +439,8 @@ namespace Combat_Realism.Detours
                             Job job = new Job(JobDefOf.Equip, equipment);
                             job.playerForced = true;
                             pawn.drafter.TakeOrderedJob(job);
-                            MoteThrower.ThrowStatic(equipment.DrawPos, ThingDefOf.Mote_FeedbackEquip, 1f);
-                            ConceptDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
+                            MoteMaker.MakeStaticMote(equipment.DrawPos, ThingDefOf.Mote_FeedbackEquip, 1f);
+                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.EquippingWeapons, KnowledgeAmount.Total);
                         }, MenuOptionPriority.Medium, null, null, 0f, null);
                     }
                     opts.Add(item3);
@@ -638,7 +640,7 @@ namespace Combat_Realism.Detours
                         Job job = new Job(JobDefOf.TradeWithPawn, pTarg);
                         job.playerForced = true;
                         pawn.drafter.TakeOrderedJob(job);
-                        ConceptDatabase.KnowledgeDemonstrated(ConceptDefOf.InteractingWithTraders, KnowledgeAmount.Total);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.InteractingWithTraders, KnowledgeAmount.Total);
                     };
                     string str = string.Empty;
                     if (pTarg.Faction != null)

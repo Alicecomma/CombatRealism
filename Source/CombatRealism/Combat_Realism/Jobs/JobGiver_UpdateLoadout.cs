@@ -133,7 +133,7 @@ namespace Combat_Realism
             }
 
             // Go through each item in the inventory and see if its part of our loadout
-            bool allowDropRaw = Find.TickManager.TicksGame > pawn.mindState.lastInventoryRawFoodUseTick + ticksBeforeDropRaw;
+            bool allowDropRaw = Find.TickManager.TicksGame > pawn.mindState?.lastInventoryRawFoodUseTick + ticksBeforeDropRaw;
             foreach (Thing thing in inventory.container)
             {
                 if(allowDropRaw || !thing.def.IsNutritionGivingIngestible || thing.def.ingestible.preferability > FoodPreferability.RawBad)
@@ -220,7 +220,7 @@ namespace Combat_Realism
                 }
 
                 // Find excess items in inventory that are not part of our loadout
-                bool allowDropRaw = Find.TickManager.TicksGame > pawn.mindState.lastInventoryRawFoodUseTick + ticksBeforeDropRaw;
+                bool allowDropRaw = Find.TickManager.TicksGame > pawn.mindState?.lastInventoryRawFoodUseTick + ticksBeforeDropRaw;
                 Thing thingToRemove = inventory.container.FirstOrDefault(t => 
                     (allowDropRaw || !t.def.IsNutritionGivingIngestible || t.def.ingestible.preferability > FoodPreferability.RawBad) 
                     && !loadout.Slots.Any(s => s.Def == t.def));

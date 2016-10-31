@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Combat_Realism.Detours
 {
     internal static class Detours_VerbTracker
     {
+           [DetourClassMethod(typeof(VerbTracker), "VerbsTick", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static void VerbsTick(this VerbTracker _this)
         {
             if (_this.AllVerbs == null)

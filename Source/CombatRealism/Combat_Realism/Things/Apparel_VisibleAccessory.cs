@@ -13,7 +13,7 @@ namespace Combat_Realism
         public override void DrawWornExtras()
         {
             if (wearer == null || !wearer.Spawned) return;
-            Vector3 drawVec = this.wearer.Drawer.DrawPos;
+            Vector3 drawVec = wearer.Drawer.DrawPos;
 
             // Check if wearer is in a bed
             Building_Bed bed = wearer.CurrentBed();

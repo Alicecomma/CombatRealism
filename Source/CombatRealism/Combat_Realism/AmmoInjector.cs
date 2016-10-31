@@ -9,6 +9,7 @@ using CommunityCoreLibrary;
 
 namespace Combat_Realism
 {
+    [SpecialInjectorSequencer(InjectionSequence.MainLoad, InjectionTiming.SpecialInjectors)]
     public class AmmoInjector : SpecialInjector
     {
         private const string enableTradeTag = "CR_AutoEnableTrade";             // The trade tag which designates ammo defs for being automatically switched to Tradeability.Stockable
@@ -27,22 +28,22 @@ namespace Combat_Realism
         public override bool Inject()
         {
             // Initialize list of all weapons so we don't have to iterate through all the defs, all the time
-            Utility.allWeaponDefs.Clear();
+            CR_Utility.allWeaponDefs.Clear();
             foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
             {
                 if (def.IsWeapon && (def.canBeSpawningInventory || def.tradeability == Tradeability.Stockable || def.weaponTags.Contains("TurretGun")))
-                    Utility.allWeaponDefs.Add(def);
+                    CR_Utility.allWeaponDefs.Add(def);
             }
-            if (Utility.allWeaponDefs.NullOrEmpty())
+            if (CR_Utility.allWeaponDefs.NullOrEmpty())
             {
                 Log.Warning("CR Ammo Injector found no weapon defs");
                 return true;
             }
             
             // Find all ammo using guns
-            foreach (ThingDef weaponDef in Utility.allWeaponDefs)
+            foreach (ThingDef weaponDef in CR_Utility.allWeaponDefs)
             {
-                CompProperties_AmmoUser props = weaponDef.GetCompProperty<CompProperties_AmmoUser>();
+                CompProperties_AmmoUser props = weaponDef.GetCompProperties<CompProperties_AmmoUser>();
                 if (props != null && props.ammoSet != null && !props.ammoSet.ammoTypes.NullOrEmpty())
                 {
                     foreach(ThingDef curDef in props.ammoSet.ammoTypes)

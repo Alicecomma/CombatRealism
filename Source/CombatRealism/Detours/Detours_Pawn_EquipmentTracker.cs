@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Combat_Realism.Detours
         private static readonly FieldInfo pawnFieldInfo = typeof(Pawn_EquipmentTracker).GetField("pawn", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo primaryIntFieldInfo = typeof(Pawn_EquipmentTracker).GetField("primaryInt", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        [DetourClassMethod(typeof(Pawn_EquipmentTracker), "AddEquipment", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static void AddEquipment(this Pawn_EquipmentTracker _this, ThingWithComps newEq)
         {
             SlotGroupUtility.Notify_TakingThing(newEq);
@@ -26,26 +28,26 @@ namespace Combat_Realism.Detours
             if (_this.AllEquipment.Where(eq => eq.def == newEq.def).Any<ThingWithComps>())
             {
                 Log.Error(string.Concat(new object[]
-		        {
-			        "Pawn ",
-			        pawn.LabelCap,
-			        " got equipment ",
-			        newEq,
-			        " while already having it."
-		        }));
+                {
+                    "Pawn ",
+                    pawn.LabelCap,
+                    " got equipment ",
+                    newEq,
+                    " while already having it."
+                }));
                 return;
             }
             if (newEq.def.equipmentType == EquipmentType.Primary && primaryInt != null)
             {
                 Log.Error(string.Concat(new object[]
-		        {
-			        "Pawn ",
-			        pawn.LabelCap,
-			        " got primaryInt equipment ",
-			        newEq,
-			        " while already having primaryInt equipment ",
-			        primaryInt
-		        }));
+                {
+                    "Pawn ",
+                    pawn.LabelCap,
+                    " got primaryInt equipment ",
+                    newEq,
+                    " while already having primaryInt equipment ",
+                    primaryInt
+                }));
                 return;
             }
             if (newEq.def.equipmentType == EquipmentType.Primary)
@@ -58,9 +60,10 @@ namespace Combat_Realism.Detours
                 current.Notify_PickedUp();
             }
 
-            Utility.TryUpdateInventory(pawn);   // Added equipment, update inventory
+            CR_Utility.TryUpdateInventory(pawn);   // Added equipment, update inventory
         }
 
+        [DetourClassMethod(typeof(Pawn_EquipmentTracker), "Notify_PrimaryDestroyed", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static void Notify_PrimaryDestroyed(this Pawn_EquipmentTracker _this)
         {
             // Fetch private fields
@@ -72,7 +75,7 @@ namespace Combat_Realism.Detours
             if (pawn.Spawned)
                 pawn.stances.CancelBusyStanceSoft();
 
-            Utility.TryUpdateInventory(pawn);   // Equipment was destroyed, update inventory
+            CR_Utility.TryUpdateInventory(pawn);   // Equipment was destroyed, update inventory
 
             // Try switching to the next available weapon
             CompInventory inventory = pawn.TryGetComp<CompInventory>();
@@ -80,6 +83,7 @@ namespace Combat_Realism.Detours
                 inventory.SwitchToNextViableWeapon(false);
         }
 
+        [DetourClassMethod(typeof(Pawn_EquipmentTracker), "TryDropEquipment", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static bool TryDropEquipment(this Pawn_EquipmentTracker _this, ThingWithComps eq, out ThingWithComps resultingEq, IntVec3 pos, bool forbid = true)
         {
             // Fetch private fields
@@ -95,12 +99,12 @@ namespace Combat_Realism.Detours
             if (!pos.IsValid)
             {
                 Log.Error(string.Concat(new object[]
-		        {
-			        pawn,
-			        " tried to drop ",
-			        eq,
-			        " at invalid cell."
-		        }));
+                {
+                    pawn,
+                    " tried to drop ",
+                    eq,
+                    " at invalid cell."
+                }));
                 resultingEq = null;
                 return false;
             }
@@ -117,7 +121,7 @@ namespace Combat_Realism.Detours
             }
             pawn.meleeVerbs.Notify_EquipmentLost();
 
-            Utility.TryUpdateInventory(pawn);       // Dropped equipment, update inventory
+            CR_Utility.TryUpdateInventory(pawn);       // Dropped equipment, update inventory
 
             // Cancel current job (use verb, etc.)
             if (pawn.Spawned)
@@ -126,6 +130,7 @@ namespace Combat_Realism.Detours
             return flag;
         }
 
+        [DetourClassMethod(typeof(Pawn_EquipmentTracker), "TryTransferEquipmentToContainer", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static bool TryTransferEquipmentToContainer(this Pawn_EquipmentTracker _this, ThingWithComps eq, ThingContainer container, out ThingWithComps resultingEq)
         {
             // Fetch private fields
@@ -149,10 +154,10 @@ namespace Combat_Realism.Detours
             if (primaryInt == eq)
             {
                 primaryIntFieldInfo.SetValue(_this, null);  // Changed assignment to SetValue() since we're fetching a private variable through reflection
-            } 
+            }
             pawn.meleeVerbs.Notify_EquipmentLost();
 
-            Utility.TryUpdateInventory(pawn);   // Equipment was stored away, update inventory
+            CR_Utility.TryUpdateInventory(pawn);   // Equipment was stored away, update inventory
 
             // Cancel current job (use verb, etc.)
             if (pawn.Spawned)
@@ -161,6 +166,7 @@ namespace Combat_Realism.Detours
             return resultingEq == null;
         }
 
+        [DetourClassMethod(typeof(Pawn_EquipmentTracker), "TryStartAttack", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static bool TryStartAttack(this Pawn_EquipmentTracker _this, TargetInfo targ)
         {
             Pawn pawn = (Pawn)pawnFieldInfo.GetValue(_this);
@@ -183,12 +189,12 @@ namespace Combat_Realism.Detours
                     CompAmmoUser compAmmo = _this.Primary.TryGetComp<CompAmmoUser>();
                     if (compAmmo != null)
                     {
-                        if(!compAmmo.hasMagazine)
+                        if (!compAmmo.hasMagazine)
                         {
                             if (compAmmo.useAmmo && !compAmmo.hasAmmo)
                                 return false;
                         }
-                        else if(compAmmo.curMagCount <= 0)
+                        else if (compAmmo.curMagCount <= 0)
                         {
                             compAmmo.TryStartReload();
                             return false;

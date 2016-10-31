@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Combat_Realism.Detours
 {
     internal static class Detours_TooltipUtility
     {
+            [DetourClassMethod(typeof(TooltipUtility), "ShotCalculationTipString", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static string ShotCalculationTipString(Thing target)
         {
             StringBuilder stringBuilder = new StringBuilder();

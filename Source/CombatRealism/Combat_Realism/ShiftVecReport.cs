@@ -15,7 +15,7 @@ namespace Combat_Realism
         {
             get
             {
-                return this.target.Thing as Pawn;
+                return target.Thing as Pawn;
             }
         }
         public float aimingAccuracy = 1f;
@@ -28,7 +28,7 @@ namespace Combat_Realism
             {
                 if (accuracyFactorInt < 0)
                 {
-                    accuracyFactorInt = (1.5f - this.aimingAccuracy) / this.aimEfficiency;
+                    accuracyFactorInt = (1.5f - aimingAccuracy) / aimEfficiency;
                 }
                 return accuracyFactorInt;
             }
@@ -59,7 +59,7 @@ namespace Combat_Realism
         {
             get
             {
-                return this.targetPawn != null && this.targetPawn.pather != null && this.targetPawn.pather.Moving;
+                return targetPawn != null && targetPawn.pather != null && targetPawn.pather.Moving;
             }
         }
         private float leadDistInt = -1f;
@@ -71,8 +71,8 @@ namespace Combat_Realism
                 {
                     if (targetIsMoving)
                     {
-                        float targetSpeed = Utility.GetMoveSpeed(targetPawn);
-                        float timeToTarget = this.shotDist / this.shotSpeed;
+                        float targetSpeed = CR_Utility.GetMoveSpeed(targetPawn);
+                        float timeToTarget = shotDist / shotSpeed;
                         leadDistInt = targetSpeed * timeToTarget;
                     }
                     else
@@ -109,18 +109,18 @@ namespace Combat_Realism
         // Copy-constructor
         public ShiftVecReport(ShiftVecReport report)
         {
-            this.target = report.target;
-            this.aimEfficiency = report.aimEfficiency;
-            this.aimingAccuracy = report.aimingAccuracy;
-            this.circularMissRadius = report.circularMissRadius;
-            this.indirectFireShift = report.indirectFireShift;
-            this.lightingShift = report.lightingShift;
-            this.shotSpeed = report.shotSpeed;
-            this.shotDist = report.shotDist;
-            this.isAiming = report.isAiming;
-            this.swayDegrees = report.swayDegrees;
-            this.spreadDegrees = report.spreadDegrees;
-            this.cover = report.cover;
+            target = report.target;
+            aimEfficiency = report.aimEfficiency;
+            aimingAccuracy = report.aimingAccuracy;
+            circularMissRadius = report.circularMissRadius;
+            indirectFireShift = report.indirectFireShift;
+            lightingShift = report.lightingShift;
+            shotSpeed = report.shotSpeed;
+            shotDist = report.shotDist;
+            isAiming = report.isAiming;
+            swayDegrees = report.swayDegrees;
+            spreadDegrees = report.spreadDegrees;
+            cover = report.cover;
         }
 
         public ShiftVecReport()
@@ -129,7 +129,7 @@ namespace Combat_Realism
 
         public Vector2 GetRandCircularVec()
         {
-            Vector2 vec = Utility.GenRandInCircle(visibilityShift + circularMissRadius + indirectFireShift);
+            Vector2 vec = CR_Utility.GenRandInCircle(visibilityShift + circularMissRadius + indirectFireShift);
             return vec;
         }
 
@@ -206,12 +206,12 @@ namespace Combat_Realism
             {
                 if (cover != null)
                 {
-                    stringBuilder.AppendLine("   " + "CR_CoverHeight".Translate() + "\t" + GenText.ToStringByStyle(Utility.GetCollisionHeight(cover), ToStringStyle.FloatTwo) + " c");
+                    stringBuilder.AppendLine("   " + "CR_CoverHeight".Translate() + "\t" + GenText.ToStringByStyle(CR_Utility.GetCollisionHeight(cover), ToStringStyle.FloatTwo) + " c");
                 }
                 if (target.Thing != null)
                 {
-                    stringBuilder.AppendLine("   " + "CR_TargetHeight".Translate() + "\t" + GenText.ToStringByStyle(Utility.GetCollisionHeight(target.Thing), ToStringStyle.FloatTwo) + " c");
-                    stringBuilder.AppendLine("   " + "CR_TargetWidth".Translate() + "\t" + GenText.ToStringByStyle(Utility.GetCollisionWidth(target.Thing) * 2, ToStringStyle.FloatTwo) + " c");
+                    stringBuilder.AppendLine("   " + "CR_TargetHeight".Translate() + "\t" + GenText.ToStringByStyle(CR_Utility.GetCollisionHeight(target.Thing), ToStringStyle.FloatTwo) + " c");
+                    stringBuilder.AppendLine("   " + "CR_TargetWidth".Translate() + "\t" + GenText.ToStringByStyle(CR_Utility.GetCollisionWidth(target.Thing) * 2, ToStringStyle.FloatTwo) + " c");
                 }
             }
             return stringBuilder.ToString();

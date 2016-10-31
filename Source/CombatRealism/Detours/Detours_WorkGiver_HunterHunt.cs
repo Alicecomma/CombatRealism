@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -11,6 +12,7 @@ namespace Combat_Realism.Detours
 {
     internal static class Detours_WorkGiver_HunterHunt
     {
+           [DetourClassMethod(typeof(WorkGiver_HunterHunt), "HasHuntingWeapon", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static bool HasHuntingWeapon(Pawn p)
         {
             if (p.equipment.Primary != null)

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-using UnityEngine;
+﻿using Verse;
 
 namespace Combat_Realism
 {
@@ -12,7 +6,7 @@ namespace Combat_Realism
     {
         public CompProperties_Inventory()
         {
-            this.compClass = typeof(CompInventory);
+            compClass = typeof(CompInventory);
         }
     }
 }

@@ -340,11 +340,11 @@
   <!-- ============================================== -->
 
   <ThingDef ParentName="BaseHumanMakeableGun">
-    <defName>Gun_PDW</defName>
-    <label>PDW</label>
-    <description>A personal defense weapon is a micro-submachine gun. Short range, low power, high rate of fire. Very quick to aim and fire.</description>
+    <defName>Gun_MachinePistol</defName>
+    <label>Machine pistol</label>
+    <description>A micro-submachine gun. Short range, low power, high rate of fire. Very quick to aim and fire.</description>
     <graphicData>
-      <texPath>Things/Item/Equipment/WeaponRanged/PDW</texPath>
+      <texPath>Things/Item/Equipment/WeaponRanged/MachinePistol</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <soundInteract>InteractSMG</soundInteract>
@@ -373,7 +373,7 @@
         <range>20</range>
         <burstShotCount>6</burstShotCount>
         <ticksBetweenBurstShots>6</ticksBetweenBurstShots>
-        <soundCast>ShotPDW</soundCast>
+        <soundCast>ShotMachinePistol</soundCast>
         <soundCastTail>GunTail_Light</soundCastTail>
         <muzzleFlashScale>9</muzzleFlashScale>
       </li>

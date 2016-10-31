@@ -17,7 +17,8 @@ namespace Combat_Realism
             {
                 return null;
             }
-            return new Job(DefDatabase<JobDef>.GetNamed("HunkerDown", true), pawn) { playerForced = true };
+
+            return new Job(CR_JobDefOf.HunkerDown, pawn) { playerForced = true };
         }
     }
 }

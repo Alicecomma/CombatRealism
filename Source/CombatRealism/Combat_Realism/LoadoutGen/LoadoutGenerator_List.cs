@@ -17,7 +17,7 @@ namespace Combat_Realism
             compInvInt = inventory;
             // Initialize available ThingDefs
             InitAvailableDefs();
-            if (this.availableDefs.NullOrEmpty())
+            if (availableDefs.NullOrEmpty())
             {
                 return;
             }

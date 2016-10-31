@@ -13,19 +13,19 @@ namespace Combat_Realism
         {
             get
             {
-                if (this.compFireModes != null)
+                if (compFireModes != null)
                 {
-                    if (this.compFireModes.currentFireMode == FireMode.SingleFire)
+                    if (compFireModes.currentFireMode == FireMode.SingleFire)
                     {
                         return 1;
                     }
-                    if ((this.compFireModes.currentFireMode == FireMode.BurstFire || (useDefaultModes && this.compFireModes.Props.aiUseBurstMode))
-                        && this.compFireModes.Props.aimedBurstShotCount > 0)
+                    if ((compFireModes.currentFireMode == FireMode.BurstFire || (useDefaultModes && compFireModes.Props.aiUseBurstMode))
+                        && compFireModes.Props.aimedBurstShotCount > 0)
                     {
-                        return this.compFireModes.Props.aimedBurstShotCount;
+                        return compFireModes.Props.aimedBurstShotCount;
                     }
                 }
-                return this.verbPropsCR.burstShotCount;
+                return verbPropsCR.burstShotCount;
             }
         }
 
@@ -34,11 +34,11 @@ namespace Combat_Realism
         {
             get
             {
-                if (this.compFireModesInt == null && this.ownerEquipment != null)
+                if (compFireModesInt == null && ownerEquipment != null)
                 {
-                    this.compFireModesInt = this.ownerEquipment.TryGetComp<CompFireModes>();
+                    compFireModesInt = ownerEquipment.TryGetComp<CompFireModes>();
                 }
-                return this.compFireModesInt;
+                return compFireModesInt;
             }
         }
 
@@ -48,14 +48,14 @@ namespace Combat_Realism
             {
                 if (compFireModes != null)
                 {
-                    if (this.CasterIsPawn)
+                    if (CasterIsPawn)
                     {
                         // Check for hunting job
                         if (CasterPawn.jobs != null && CasterPawn.jobs.curJob != null && CasterPawn.jobs.curJob.def == JobDefOf.Hunt)
                             return true;
 
                         // Check for suppression
-                        CompSuppressable comp = this.caster.TryGetComp<CompSuppressable>();
+                        CompSuppressable comp = caster.TryGetComp<CompSuppressable>();
                         if (comp != null)
                         {
                             if (comp.isSuppressed)
@@ -64,7 +64,7 @@ namespace Combat_Realism
                             }
                         }
                     }
-                    return this.compFireModes.currentAimMode == AimMode.AimedShot || (useDefaultModes && this.compFireModes.Props.aiUseAimMode);
+                    return compFireModes.currentAimMode == AimMode.AimedShot || (useDefaultModes && compFireModes.Props.aiUseAimMode);
                 }
                 return false;
             }
@@ -86,7 +86,7 @@ namespace Combat_Realism
             get
             {
                 float sway = base.swayAmplitude;
-                if (this.shouldAim)
+                if (shouldAim)
                 {
                     sway *= Mathf.Max(0, 1 - aimingAccuracy);
                 }
@@ -111,14 +111,14 @@ namespace Combat_Realism
             if (xpTicks <= 0)
                 xpTicks = Mathf.CeilToInt(verbProps.warmupTicks * 0.5f);
 
-            if (this.shouldAim && !this.isAiming)
+            if (shouldAim && !isAiming)
             {
-                float targetDist = (this.currentTarget.Cell - this.caster.Position).LengthHorizontal;
+                float targetDist = (currentTarget.Cell - caster.Position).LengthHorizontal;
                 int aimTicks = (int)Mathf.Lerp(aimTicksMin, aimTicksMax, (targetDist / 100));
                 if (CasterIsPawn)
                 {
-                    this.CasterPawn.stances.SetStance(new Stance_Warmup(aimTicks, this.currentTarget, this));
-                    this.isAiming = true;
+                    CasterPawn.stances.SetStance(new Stance_Warmup(aimTicks, currentTarget, this));
+                    isAiming = true;
                     return;
                 }
                 else
@@ -127,7 +127,7 @@ namespace Combat_Realism
                     if (turret != null)
                     {
                         turret.burstWarmupTicksLeft += aimTicks;
-                        this.isAiming = true;
+                        isAiming = true;
                         return;
                     }
                 }
@@ -135,38 +135,38 @@ namespace Combat_Realism
 
             // Shooty stuff
             base.WarmupComplete();
-            this.isAiming = false;
+            isAiming = false;
         }
 
         public override void VerbTickCR()
         {
-            if (this.isAiming)
+            if (isAiming)
             {
-                this.xpTicks++;
-                if (!this.shouldAim)
+                xpTicks++;
+                if (!shouldAim)
                 {
-                    this.WarmupComplete();
+                    WarmupComplete();
                 }
-                if (CasterIsPawn && this.CasterPawn.stances.curStance.GetType() != typeof(Stance_Warmup))
+                if (CasterIsPawn && CasterPawn.stances.curStance.GetType() != typeof(Stance_Warmup))
                 {
-                    this.isAiming = false;
+                    isAiming = false;
                 }
             }
             // Increase shootTicks while bursting so we can calculate XP afterwards
-            else if (this.state == VerbState.Bursting)
+            else if (state == VerbState.Bursting)
             {
-                this.xpTicks++;
+                xpTicks++;
             }
-            else if (this.xpTicks > 0)
+            else if (xpTicks > 0)
             {
                 // Reward XP to shooter pawn
-                if (this.ShooterPawn != null && this.ShooterPawn.skills != null)
+                if (ShooterPawn != null && ShooterPawn.skills != null)
                 {
                     float xpPerTick = objectXP;
-                    Pawn targetPawn = this.currentTarget.Thing as Pawn;
+                    Pawn targetPawn = currentTarget.Thing as Pawn;
                     if (targetPawn != null)
                     {
-                        if (targetPawn.HostileTo(this.caster.Faction))
+                        if (targetPawn.HostileTo(caster.Faction))
                         {
                             xpPerTick = hostileXP;
                         }
@@ -175,9 +175,9 @@ namespace Combat_Realism
                             xpPerTick = pawnXP;
                         }
                     }
-                    this.ShooterPawn.skills.Learn(SkillDefOf.Shooting, xpPerTick * xpTicks);
+                    ShooterPawn.skills.Learn(SkillDefOf.Shooting, xpPerTick * xpTicks);
                 }
-                this.xpTicks = 0;
+                xpTicks = 0;
             }
         }
 
@@ -187,9 +187,9 @@ namespace Combat_Realism
         public override void Notify_Dropped()
         {
             base.Notify_Dropped();
-            if (this.compFireModes != null)
+            if (compFireModes != null)
             {
-                this.compFireModes.ResetModes();
+                compFireModes.ResetModes();
             }
             caster = null;
         }
@@ -200,7 +200,7 @@ namespace Combat_Realism
         public override bool CanHitTargetFrom(IntVec3 root, TargetInfo targ)
         {
             if (CasterIsPawn && !CasterPawn.health.capacities.CapableOf(PawnCapacityDefOf.Sight)) return false;
-            if (this.compFireModes != null && this.compFireModes.currentAimMode == AimMode.HoldFire
+            if (compFireModes != null && compFireModes.currentAimMode == AimMode.HoldFire
                 && (!CasterIsPawn || CasterPawn.CurJob == null || CasterPawn.CurJob.def != JobDefOf.Hunt))
                 return false;
             return base.CanHitTargetFrom(root, targ);
@@ -223,7 +223,7 @@ namespace Combat_Realism
                 //Drop casings
                 if (verbPropsCR.ejectsCasings && projectilePropsCR.dropsCasings)
                 {
-                    Utility.ThrowEmptyCasing(this.caster.DrawPos, ThingDef.Named(this.projectilePropsCR.casingMoteDefname));
+                    CR_Utility.ThrowEmptyCasing(caster.DrawPos, ThingDef.Named(projectilePropsCR.casingMoteDefname));
                 }
                 return true;
             }

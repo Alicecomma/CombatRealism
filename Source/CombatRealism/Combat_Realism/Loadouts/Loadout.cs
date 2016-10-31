@@ -34,7 +34,7 @@ namespace Combat_Realism
             uniqueID = LoadoutManager.GetUniqueID();
         }
 
-        public Loadout( string label )
+        public Loadout(string label)
         {
             this.label = label;
 
@@ -42,7 +42,7 @@ namespace Combat_Realism
             uniqueID = LoadoutManager.GetUniqueID();
         }
 
-        public Loadout( string label, int uniqueID )
+        public Loadout(string label, int uniqueID)
         {
             this.label = label;
             this.uniqueID = uniqueID;
@@ -56,7 +56,7 @@ namespace Combat_Realism
         {
             get
             {
-                return _slots.Select( slot => slot.Def.GetStatValueAbstract( StatDef.Named( "Bulk" ) ) * slot.Count ).Sum();
+                return _slots.Select(slot => slot.Def.GetStatValueAbstract(CR_StatDefOf.Bulk) * slot.Count).Sum();
             }
         }
 
@@ -70,7 +70,7 @@ namespace Combat_Realism
         {
             get
             {
-                return _slots.Select( slot => slot.Def.GetStatValueAbstract( StatDef.Named( "Weight" ) ) * slot.Count ).Sum();
+                return _slots.Select(slot => slot.Def.GetStatValueAbstract(CR_StatDefOf.Weight) * slot.Count).Sum();
             }
         }
 
@@ -78,21 +78,21 @@ namespace Combat_Realism
 
         #region Methods
 
-        public void AddSlot( LoadoutSlot slot )
+        public void AddSlot(LoadoutSlot slot)
         {
-            _slots.Add( slot );
+            _slots.Add(slot);
         }
 
         public void ExposeData()
         {
             // basic info about this loadout
-            Scribe_Values.LookValue( ref label, "label" );
-            Scribe_Values.LookValue( ref uniqueID, "uniqueID" );
-            Scribe_Values.LookValue( ref canBeDeleted, "canBeDeleted", true );
-            Scribe_Values.LookValue( ref defaultLoadout, "defaultLoadout", false );
+            Scribe_Values.LookValue(ref label, "label");
+            Scribe_Values.LookValue(ref uniqueID, "uniqueID");
+            Scribe_Values.LookValue(ref canBeDeleted, "canBeDeleted", true);
+            Scribe_Values.LookValue(ref defaultLoadout, "defaultLoadout", false);
 
             // slots
-            Scribe_Collections.LookList( ref _slots, "slots", LookMode.Deep );
+            Scribe_Collections.LookList(ref _slots, "slots", LookMode.Deep);
         }
 
         public string GetUniqueLoadID()
@@ -100,41 +100,41 @@ namespace Combat_Realism
             return "Loadout_" + label + "_" + uniqueID;
         }
 
-        public void MoveSlot( LoadoutSlot slot, int toIndex )
+        public void MoveSlot(LoadoutSlot slot, int toIndex)
         {
-            int fromIndex = _slots.IndexOf( slot );
-            MoveTo( fromIndex, toIndex );
+            int fromIndex = _slots.IndexOf(slot);
+            MoveTo(fromIndex, toIndex);
         }
 
-        public void RemoveSlot( LoadoutSlot slot )
+        public void RemoveSlot(LoadoutSlot slot)
         {
-            _slots.Remove( slot );
+            _slots.Remove(slot);
         }
 
-        public void RemoveSlot( int index )
+        public void RemoveSlot(int index)
         {
-            _slots.RemoveAt( index );
+            _slots.RemoveAt(index);
         }
 
-        private int MoveTo( int fromIndex, int toIndex )
+        private int MoveTo(int fromIndex, int toIndex)
         {
-            if ( fromIndex < 0 || fromIndex >= _slots.Count || toIndex < 0 || toIndex >= _slots.Count )
+            if (fromIndex < 0 || fromIndex >= _slots.Count || toIndex < 0 || toIndex >= _slots.Count)
             {
-                throw new Exception( "Attempted to move i " + fromIndex + " to " + toIndex + ", bounds are [0," + ( _slots.Count-1 ) + "]." );
+                throw new Exception("Attempted to move i " + fromIndex + " to " + toIndex + ", bounds are [0," + (_slots.Count - 1) + "].");
             }
 
             // fetch the filter we're moving
-            var temp = _slots[fromIndex];
+            LoadoutSlot temp = _slots[fromIndex];
 
             // remove from old location
-            _slots.RemoveAt( fromIndex );
+            _slots.RemoveAt(fromIndex);
 
             // this may have changed the toIndex
-            if ( fromIndex + 1 < toIndex )
+            if (fromIndex + 1 < toIndex)
                 toIndex--;
 
             // insert at new location
-            _slots.Insert( toIndex, temp );
+            _slots.Insert(toIndex, temp);
             return toIndex;
         }
 

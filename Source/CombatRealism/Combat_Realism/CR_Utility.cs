@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Combat_Realism
 {
-    static class Utility
+   public static class CR_Utility
     {
         #region Misc
 
@@ -94,7 +94,7 @@ namespace Combat_Realism
 
         #endregion Misc
 
-        #region MoteThrower
+        #region MoteMaker
         public static void ThrowEmptyCasing(Vector3 loc, ThingDef casingMoteDef, float size = 1f)
         {
             if (!loc.ShouldSpawnMotesAt() || MoteCounter.SaturatedLowPriority)
@@ -102,11 +102,12 @@ namespace Combat_Realism
                 return;
             }
             MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(casingMoteDef, null);
-            moteThrown.ScaleUniform = Rand.Range(0.5f, 0.3f) * size;
-            moteThrown.exactRotationRate = Rand.Range(-3f, 4f);
+            moteThrown.Scale = Rand.Range(0.5f, 0.3f) * size;
+            moteThrown.exactRotation = Rand.Range(-3f, 4f);
             moteThrown.exactPosition = loc;
-            moteThrown.airTicksLeft = 60;
-            moteThrown.SetVelocityAngleSpeed((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
+            moteThrown.airTimeLeft = 60;
+            moteThrown.SetVelocity((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
+       //     moteThrown.SetVelocityAngleSpeed((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
             GenSpawn.Spawn(moteThrown, loc.ToIntVec3());
         }
         #endregion
@@ -154,7 +155,7 @@ namespace Combat_Realism
             {
                 return 0.5f;    //Buildings, etc. fill out half a square to each side
             }
-            return pawn.BodySize * (Utility.humanoidBodyList.Contains(pawn.RaceProps.body.defName) ? collisionWidthFactorHumanoid : collisionWidthFactor);
+            return pawn.BodySize * (humanoidBodyList.Contains(pawn.RaceProps.body.defName) ? collisionWidthFactorHumanoid : collisionWidthFactor);
         }
 
         #endregion Physics
@@ -214,7 +215,7 @@ namespace Combat_Realism
                         Thing armorThing = damageArmor ? wornApparel[i] : null;
 
                         //Check for deflection
-                        if (Utility.ApplyArmor(ref damageAmount, ref pierceAmount, wornApparel[i].GetStatValue(deflectionStat, true), armorThing, damageDef))
+                        if (ApplyArmor(ref damageAmount, ref pierceAmount, wornApparel[i].GetStatValue(deflectionStat, true), armorThing, damageDef))
                         {
                             deflected = true;
                             if (damageDef != absorbDamageDef)
@@ -251,7 +252,7 @@ namespace Combat_Realism
                 pawnArmorAmount = pawn.GetStatValue(deflectionStat);
             }
 
-            if (pawnArmorAmount > 0 && Utility.ApplyArmor(ref damageAmount, ref pierceAmount, pawnArmorAmount, null, damageDef))
+            if (pawnArmorAmount > 0 && ApplyArmor(ref damageAmount, ref pierceAmount, pawnArmorAmount, null, damageDef))
             {
                 deflected = true;
                 if (damageAmount < 0.001)
@@ -260,7 +261,7 @@ namespace Combat_Realism
                 }
                 damageDef = absorbDamageDef;
                 deflectionStat = damageDef.armorCategory.DeflectionStat();
-                Utility.ApplyArmor(ref damageAmount, ref pierceAmount, pawn.GetStatValue(deflectionStat, true), pawn, damageDef);
+                ApplyArmor(ref damageAmount, ref pierceAmount, pawn.GetStatValue(deflectionStat, true), pawn, damageDef);
             }
             return Mathf.RoundToInt(damageAmount);
         }

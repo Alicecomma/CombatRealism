@@ -16,7 +16,7 @@ namespace Combat_Realism
         public override void TickLong()
         {
             base.TickLong();
-            float temperature = base.Position.GetTemperature();
+            float temperature = Position.GetTemperature();
             if (temperature > ignitionTemp)
             {
                 float ignitionChance = 0.005f * Mathf.Pow((temperature - ignitionTemp), 2);

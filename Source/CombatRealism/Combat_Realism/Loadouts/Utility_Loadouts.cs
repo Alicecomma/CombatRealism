@@ -13,12 +13,7 @@ namespace Combat_Realism
     {
         #region Fields
 
-        public static StatDef Bulk = StatDef.Named("Bulk"); // for items in inventory
-        public static StatDef CarryBulk = StatDef.Named("CarryBulk"); // pawn capacity
-        public static StatDef CarryWeight = StatDef.Named("CarryWeight"); // pawn capacity
-        public static StatDef Weight = StatDef.Named("Weight"); // items in inventory
-        public static StatDef WornBulk = StatDef.Named("WornBulk"); // apparel offsets
-        public static StatDef WornWeight = StatDef.Named("WornWeight"); // apparel offsets
+
         private static float _labelSize = -1f;
         private static float _margin = 6f;
         private static Texture2D _overburdenedTex;
@@ -105,21 +100,20 @@ namespace Combat_Realism
 
         public static string GetBulkTip(this Loadout loadout)
         {
-            float baseBulkCapacity = ThingDefOf.Human.GetStatValueAbstract(CarryBulk);
+            float baseBulkCapacity = ThingDefOf.Human.GetStatValueAbstract(CR_StatDefOf.CarryBulk);
             float workSpeedFactor = Mathf.Lerp(1f, 0.75f, loadout.Bulk / baseBulkCapacity);
 
             return "CR.DetailedBaseBulkTip".Translate(
-                CarryBulk.ValueToString(baseBulkCapacity, CarryBulk.toStringNumberSense),
-                CarryBulk.ValueToString(loadout.Bulk, CarryBulk.toStringNumberSense),
+                CR_StatDefOf.CarryBulk.ValueToString(baseBulkCapacity, CR_StatDefOf.CarryBulk.toStringNumberSense),
+                CR_StatDefOf.CarryBulk.ValueToString(loadout.Bulk, CR_StatDefOf.CarryBulk.toStringNumberSense),
                 workSpeedFactor.ToStringPercent());
         }
 
         public static string GetBulkTip(this Pawn pawn)
         {
-            var comp = pawn.TryGetComp<CompInventory>();
+            CompInventory comp = pawn.TryGetComp<CompInventory>();
             if (comp != null)
-                return "CR.DetailedBulkTip".Translate(CarryBulk.ValueToString(comp.capacityBulk, CarryBulk.toStringNumberSense),
-                                                       CarryBulk.ValueToString(comp.currentBulk, CarryBulk.toStringNumberSense),
+                return "CR.DetailedBulkTip".Translate(CR_StatDefOf.CarryBulk.ValueToString(comp.capacityBulk, CR_StatDefOf.CarryBulk.toStringNumberSense), CR_StatDefOf.CarryBulk.ValueToString(comp.currentBulk, CR_StatDefOf.CarryBulk.toStringNumberSense),
                                                        comp.workSpeedFactor.ToStringPercent());
             else
                 return String.Empty;
@@ -128,15 +122,13 @@ namespace Combat_Realism
         public static string GetBulkTip(this Thing thing, int count = 1)
         {
             return
-                "CR.Bulk".Translate() + ": " +
-                Bulk.ValueToString(thing.GetStatValue(Bulk) * count, Bulk.toStringNumberSense);
+                "CR.Bulk".Translate() + ": " + CR_StatDefOf.Bulk.ValueToString(thing.GetStatValue(CR_StatDefOf.Bulk) * count, CR_StatDefOf.Bulk.toStringNumberSense);
         }
 
         public static string GetBulkTip(this ThingDef def, int count = 1)
         {
             return
-                "CR.Bulk".Translate() + ": " +
-                Bulk.ValueToString(def.GetStatValueAbstract(Bulk) * count, Bulk.toStringNumberSense);
+                "CR.Bulk".Translate() + ": " + CR_StatDefOf.Bulk.ValueToString(def.GetStatValueAbstract(CR_StatDefOf.Bulk) * count, CR_StatDefOf.Bulk.toStringNumberSense);
         }
 
         public static Loadout GetLoadout(this Pawn pawn)
@@ -178,37 +170,33 @@ namespace Combat_Realism
         public static string GetWeightTip(this ThingDef def, int count = 1)
         {
             return
-                "CR.Weight".Translate() + ": " +
-                Weight.ValueToString(def.GetStatValueAbstract(Weight) * count, Weight.toStringNumberSense);
+                "CR.Weight".Translate() + ": " + CR_StatDefOf.Weight.ValueToString(def.GetStatValueAbstract(CR_StatDefOf.Weight) * count, CR_StatDefOf.Weight.toStringNumberSense);
         }
 
         public static string GetWeightTip(this Thing thing, int count = 1)
         {
             return
-                "CR.Weight".Translate() + ": " +
-                Weight.ValueToString(thing.GetStatValue(Weight) * count, Weight.toStringNumberSense);
+                "CR.Weight".Translate() + ": " + CR_StatDefOf.Weight.ValueToString(thing.GetStatValue(CR_StatDefOf.Weight) * count, CR_StatDefOf.Weight.toStringNumberSense);
         }
 
         public static string GetWeightTip(this Loadout loadout)
         {
-            float baseWeightCapacity = ThingDefOf.Human.GetStatValueAbstract(CarryWeight);
+            float baseWeightCapacity = ThingDefOf.Human.GetStatValueAbstract(CR_StatDefOf.CarryWeight);
             float moveSpeedFactor = Mathf.Lerp(1f, 0.75f, loadout.Weight / baseWeightCapacity);
             float encumberPenalty = loadout.Weight > baseWeightCapacity ?
                 loadout.Weight / baseWeightCapacity - 1 :
                 0f;
 
-            return "CR.DetailedBaseWeightTip".Translate(CarryWeight.ValueToString(baseWeightCapacity, CarryWeight.toStringNumberSense),
-                                                 CarryWeight.ValueToString(loadout.Weight, CarryWeight.toStringNumberSense),
+            return "CR.DetailedBaseWeightTip".Translate(CR_StatDefOf.CarryWeight.ValueToString(baseWeightCapacity, CR_StatDefOf.CarryWeight.toStringNumberSense), CR_StatDefOf.CarryWeight.ValueToString(loadout.Weight, CR_StatDefOf.CarryWeight.toStringNumberSense),
                                                  moveSpeedFactor.ToStringPercent(),
                                                  encumberPenalty.ToStringPercent());
         }
 
         public static string GetWeightTip(this Pawn pawn)
         {
-            var comp = pawn.TryGetComp<CompInventory>();
+            CompInventory comp = pawn.TryGetComp<CompInventory>();
             if (comp != null)
-                return "CR.DetailedWeightTip".Translate(CarryWeight.ValueToString(comp.capacityWeight, CarryWeight.toStringNumberSense),
-                                                     CarryWeight.ValueToString(comp.currentWeight, CarryWeight.toStringNumberSense),
+                return "CR.DetailedWeightTip".Translate(CR_StatDefOf.CarryWeight.ValueToString(comp.capacityWeight, CR_StatDefOf.CarryWeight.toStringNumberSense), CR_StatDefOf.CarryWeight.ValueToString(comp.currentWeight, CR_StatDefOf.CarryWeight.toStringNumberSense),
                                                      comp.moveSpeedFactor.ToStringPercent(),
                                                      comp.encumberPenalty.ToStringPercent());
             else

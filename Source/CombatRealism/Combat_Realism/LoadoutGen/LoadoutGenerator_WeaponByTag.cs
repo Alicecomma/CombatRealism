@@ -20,7 +20,7 @@ namespace Combat_Realism
             if (!tagListDict.ContainsKey(tag))
             {
                 List<ThingDef> taggedWeaponList = new List<ThingDef>();
-                foreach(ThingDef def in Utility.allWeaponDefs)
+                foreach(ThingDef def in CR_Utility.allWeaponDefs)
                 {
                     if (!def.weaponTags.NullOrEmpty() && def.weaponTags.Contains(tag))
                     {

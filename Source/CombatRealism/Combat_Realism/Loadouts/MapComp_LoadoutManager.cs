@@ -62,8 +62,8 @@ namespace Combat_Realism
             Instance._loadouts.Remove( loadout );
 
             // assign default loadout to pawns that used to use this loadout
-            var obsolete = AssignedLoadouts.Where( a => a.Value == loadout ).Select( a => a.Key );
-            foreach ( var id in obsolete )
+            IEnumerable<Pawn> obsolete = AssignedLoadouts.Where( a => a.Value == loadout ).Select( a => a.Key );
+            foreach ( Pawn id in obsolete )
             {
                 AssignedLoadouts[id] = DefaultLoadout;
             }

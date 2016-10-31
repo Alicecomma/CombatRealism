@@ -19,7 +19,6 @@
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Transparent</shaderType>
     </graphicData>
-    <category>Item</category>
     <tickerType>Never</tickerType>
   </ThingDef>
   

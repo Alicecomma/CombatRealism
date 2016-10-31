@@ -18,7 +18,7 @@ namespace Combat_Realism
 
         public CompProperties_AmmoUser()
         {
-            this.compClass = typeof(CompAmmoUser);
+            compClass = typeof(CompAmmoUser);
         }
     }
 }

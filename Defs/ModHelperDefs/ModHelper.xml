@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-
+  
   <CommunityCoreLibrary.ModHelperDef>
-    <defName>CombatRealism</defName>
-    <ModName>CombatRealism</ModName>
-        <minCCLVersion>0.14.0</minCCLVersion>
-		<SpecialInjectors>
-			<li>Combat_Realism.Detours.DetourInjector</li>
-      <li>Combat_Realism.ITabInjector</li>
-      <li>Combat_Realism.AmmoInjector</li>
-		</SpecialInjectors>
-    <ThingComps>
-      <li>
+    <defName>CombatRealismKF</defName>
+    <ModName>Combat Realism KF</ModName>
+        <minCCLVersion>0.15.0</minCCLVersion>
+    
+    <SequencedInjectionSets>
+   <!--<li Class="CommunityCoreLibrary.SequencedInjectionSet_ITab">
+        <newITab>Combat_Realism.ITab_Inventory</newITab> 
+        <replaceITab>ITab_Pawn_Gear</replaceITab>
+      <targetDefs>
+        <li>Human</li>
+      </targetDefs>
+    </li>
+    -->
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_ThingComp">
         <compProps>
           <compClass>CommunityCoreLibrary.CompPawnGizmo</compClass>
         </compProps>
@@ -19,7 +23,7 @@
           <li>Human</li>
         </targetDefs>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_ThingComp">
         <compProps>
           <compClass>Combat_Realism.CompSuppressable</compClass>
         </compProps>
@@ -27,7 +31,7 @@
           <li>Human</li>
         </targetDefs>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_ThingComp">
         <compProps>
           <compClass>Combat_Realism.CompInventory</compClass>
         </compProps>
@@ -37,7 +41,7 @@
           <li>Mechanoid_Scyther</li>
         </targetDefs>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_ThingComp">
         <compProps Class="CommunityCoreLibrary.CompProperties_ShearableRenameable">
           <compClass>CommunityCoreLibrary.CompShearableRenameable</compClass>
           <growthLabel>Chemical fullness</growthLabel>
@@ -49,7 +53,7 @@
           <li>Boomalope</li>
         </targetDefs>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_ThingComp">
         <compProps Class="CommunityCoreLibrary.CompProperties_ShearableRenameable">
           <compClass>CommunityCoreLibrary.CompShearableRenameable</compClass>
           <growthLabel>Chemical fullness</growthLabel>
@@ -61,10 +65,8 @@
           <li>Boomrat</li>
         </targetDefs>
       </li>
-    </ThingComps>
-    <TraderKinds>
-      <li>
-        <targetDef>Orbital_Misc_PirateMerchant</targetDef>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_StockGenerator">
+        <targetDef>Orbital_PirateMerchant</targetDef>
         <stockGenerators>
           <li Class="StockGenerator_Tag">
             <tradeTag>CR_Ammo</tradeTag>
@@ -86,7 +88,7 @@
 					</li>
         </stockGenerators>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_StockGenerator">
         <targetDef>Caravan_Outlander_PirateMerchant</targetDef>
         <stockGenerators>
           <li Class="StockGenerator_Tag">
@@ -109,8 +111,8 @@
 					</li>
         </stockGenerators>
       </li>
-      <li>
-        <targetDef>Orbital_Misc_CombatSupplier</targetDef>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_StockGenerator">
+        <targetDef>Orbital_CombatSupplier</targetDef>
         <stockGenerators>
           <li Class="StockGenerator_Tag">
             <tradeTag>CR_Ammo</tradeTag>
@@ -151,7 +153,7 @@
 					</li>
         </stockGenerators>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_StockGenerator">
         <targetDef>Caravan_Outlander_CombatSupplier</targetDef>
         <stockGenerators>
           <li Class="StockGenerator_Tag">
@@ -193,7 +195,7 @@
 					</li>
         </stockGenerators>
       </li>
-      <li>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_StockGenerator">
         <targetDef>Caravan_Outlander_BulkGoods</targetDef>
         <stockGenerators>
 					<li Class="StockGenerator_SingleDef">
@@ -214,8 +216,8 @@
 					</li>
         </stockGenerators>
       </li>
-      <li>
-        <targetDef>Orbital_Misc_BulkGoods</targetDef>
+      <li Class="CommunityCoreLibrary.SequencedInjectionSet_StockGenerator">
+        <targetDef>Orbital_BulkGoods</targetDef>
         <stockGenerators>
           <li Class="StockGenerator_SingleDef">
             <thingDef>FSX</thingDef>
@@ -235,7 +237,8 @@
           </li>
         </stockGenerators>
       </li>
-    </TraderKinds>
+    </SequencedInjectionSets>
+
   </CommunityCoreLibrary.ModHelperDef>
 
 </Defs>

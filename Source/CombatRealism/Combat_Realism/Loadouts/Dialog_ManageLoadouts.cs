@@ -152,7 +152,7 @@ namespace Combat_Realism
                 (canvas.width - _margin) / 2f,
                 canvas.height - 24f - _topAreaHeight - _margin * 3);
 
-            var loadouts = LoadoutManager.Loadouts;
+            List<Loadout> loadouts = LoadoutManager.Loadouts;
 
             // DRAW CONTENTS
             // buttons
@@ -178,7 +178,7 @@ namespace Combat_Realism
             // create loadout
             if (Widgets.ButtonText(newRect, "CR.NewLoadout".Translate()))
             {
-                var loadout = new Loadout();
+                Loadout loadout = new Loadout();
                 LoadoutManager.AddLoadout(loadout);
                 CurrentLoadout = loadout;
             }
@@ -234,8 +234,8 @@ namespace Combat_Realism
             // bars
             if (CurrentLoadout != null)
             {
-                Utility_Loadouts.DrawBar(weightBarRect, CurrentLoadout.Weight, StatDef.Named("CarryWeight").defaultBaseValue, "CR.Weight".Translate(), CurrentLoadout.GetWeightTip());
-                Utility_Loadouts.DrawBar(bulkBarRect, CurrentLoadout.Bulk, StatDef.Named("CarryBulk").defaultBaseValue, "CR.Bulk".Translate(), CurrentLoadout.GetBulkTip());
+                Utility_Loadouts.DrawBar(weightBarRect, CurrentLoadout.Weight, CR_StatDefOf.CarryWeight.defaultBaseValue, "CR.Weight".Translate(), CurrentLoadout.GetWeightTip());
+                Utility_Loadouts.DrawBar(bulkBarRect, CurrentLoadout.Bulk, CR_StatDefOf.CarryBulk.defaultBaseValue, "CR.Bulk".Translate(), CurrentLoadout.GetBulkTip());
             }
 
             // done!
@@ -422,7 +422,7 @@ namespace Combat_Realism
                     {
                         List<FloatMenuOption> options = new List<FloatMenuOption>();
 
-                        foreach (var ammo in ((ammoSet == null) ? null : ammoSet.ammoTypes))
+                        foreach (ThingDef ammo in ((ammoSet == null) ? null : ammoSet.ammoTypes))
                         {
                             options.Add(new FloatMenuOption(ammo.LabelCap, delegate
                             {
@@ -544,6 +544,11 @@ namespace Combat_Realism
             Widgets.BeginScrollView(canvas, ref _availableScrollPosition, viewRect.AtZero());
             for (int i = 0; i < _source.Count; i++)
             {
+                // gray out weapons not in stock
+                Color baseColor = GUI.color;
+                if (Find.ListerThings.AllThings.FindAll(x => x.def == _source[i]).Count <= 0)
+                    GUI.color = Color.gray;
+
                 Rect row = new Rect(0f, i * _rowHeight, canvas.width, _rowHeight);
                 Rect labelRect = new Rect(row);
                 TooltipHandler.TipRegion(row, _source[i].GetWeightAndBulkTip());
@@ -559,9 +564,11 @@ namespace Combat_Realism
                 Widgets.DrawHighlightIfMouseover(row);
                 if (Widgets.ButtonInvisible(row))
                 {
-                    var slot = new LoadoutSlot(_source[i], 1);
+                    LoadoutSlot slot = new LoadoutSlot(_source[i], 1);
                     CurrentLoadout.AddSlot(slot);
                 }
+                // revert to original color
+                GUI.color = baseColor;
             }
             Widgets.EndScrollView();
         }

@@ -18,14 +18,14 @@ namespace Combat_Realism
             base.Impact(hitThing);
             if (hitThing != null)
             {
-                int damageAmountBase = this.def.projectile.damageAmountBase;
+                int damageAmountBase = def.projectile.damageAmountBase;
 
                 BodyPartDamageInfo value;
                 DamageDef_CR damDefCR = def.projectile.damageDef as DamageDef_CR;
                 if (damDefCR != null && damDefCR.harmOnlyOutsideLayers) value = new BodyPartDamageInfo(null, BodyPartDepth.Outside);
                 else value = new BodyPartDamageInfo(null, null);
 
-                DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, damageAmountBase, this.launcher, this.ExactRotation.eulerAngles.y, new BodyPartDamageInfo?(value), this.def);
+                DamageInfo dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, launcher, ExactRotation.eulerAngles.y, new BodyPartDamageInfo?(value), def);
 
                 ProjectilePropertiesCR propsCR = def.projectile as ProjectilePropertiesCR;
                 if (propsCR != null && !propsCR.secondaryDamage.NullOrEmpty())
@@ -58,8 +58,8 @@ namespace Combat_Realism
             }
             else
             {
-                SoundDefOf.BulletImpactGround.PlayOneShot(base.Position);
-                MoteThrower.ThrowStatic(this.ExactPosition, ThingDefOf.Mote_ShotHit_Dirt, 1f);
+                SoundDefOf.BulletImpactGround.PlayOneShot(Position);
+                MoteMaker.MakeStaticMote(ExactPosition, ThingDefOf.Mote_ShotHit_Dirt, 1f);
             }
         }
     }

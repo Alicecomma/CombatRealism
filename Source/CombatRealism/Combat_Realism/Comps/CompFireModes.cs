@@ -14,7 +14,7 @@ namespace Combat_Realism
         {
             get
             {
-                return (CompProperties_FireModes)this.props;
+                return (CompProperties_FireModes)props;
             }
         }
 
@@ -24,33 +24,33 @@ namespace Combat_Realism
         {
             get
             {
-                if (this.verbInt == null)
+                if (verbInt == null)
                 {
-                    CompEquippable compEquippable = this.parent.TryGetComp<CompEquippable>();
+                    CompEquippable compEquippable = parent.TryGetComp<CompEquippable>();
                     if (compEquippable != null)
                     {
-                        this.verbInt = compEquippable.PrimaryVerb;
+                        verbInt = compEquippable.PrimaryVerb;
                     }
                     else
                     {
-                        Log.ErrorOnce(this.parent.LabelCap + " has CompFireModes but no CompEquippable", 50020);
+                        Log.ErrorOnce(parent.LabelCap + " has CompFireModes but no CompEquippable", 50020);
                     }
                 }
-                return this.verbInt;
+                return verbInt;
             }
         }
         public Thing caster
         {
             get
             {
-                return this.verb.caster;
+                return verb.caster;
             }
         }
         public Pawn casterPawn
         {
             get
             {
-                return this.caster as Pawn;
+                return caster as Pawn;
             }
         }
         private List<FireMode> availableFireModes = new List<FireMode>();
@@ -61,7 +61,7 @@ namespace Combat_Realism
         {
             get
             {
-                return this.currentFireModeInt;
+                return currentFireModeInt;
             }
         }
         private AimMode currentAimModeInt;
@@ -69,7 +69,7 @@ namespace Combat_Realism
         {
             get
             {
-                return this.currentAimModeInt;
+                return currentAimModeInt;
             }
         }
 
@@ -89,31 +89,31 @@ namespace Combat_Realism
         private void InitAvailableFireModes()
         {
             // Calculate available fire modes
-            if (this.verb.verbProps.burstShotCount > 1 || this.Props.noSingleShot)
+            if (verb.verbProps.burstShotCount > 1 || Props.noSingleShot)
             {
-                this.availableFireModes.Add(FireMode.AutoFire);
+                availableFireModes.Add(FireMode.AutoFire);
             }
-            if (this.Props.aimedBurstShotCount > 1)
+            if (Props.aimedBurstShotCount > 1)
             {
-                if (this.Props.aimedBurstShotCount >= this.verb.verbProps.burstShotCount)
+                if (Props.aimedBurstShotCount >= verb.verbProps.burstShotCount)
                 {
-                    Log.Warning(this.parent.LabelCap + " burst fire shot count is same or higher than auto fire");
+                    Log.Warning(parent.LabelCap + " burst fire shot count is same or higher than auto fire");
                 }
                 else
                 {
-                    this.availableFireModes.Add(FireMode.BurstFire);
+                    availableFireModes.Add(FireMode.BurstFire);
                 }
             }
-            if (!this.Props.noSingleShot)
+            if (!Props.noSingleShot)
             {
-                this.availableFireModes.Add(FireMode.SingleFire);
+                availableFireModes.Add(FireMode.SingleFire);
             }
             if (Props.noSnapshot) availableAimModes.Remove(AimMode.Snapshot);
 
             // Sanity check in case def changed
-            if (!this.availableFireModes.Contains(this.currentFireModeInt) || !availableAimModes.Contains(currentAimMode))
+            if (!availableFireModes.Contains(currentFireModeInt) || !availableAimModes.Contains(currentAimMode))
             {
-                this.ResetModes();
+                ResetModes();
             }
         }
 
@@ -122,16 +122,16 @@ namespace Combat_Realism
         /// </summary>
         public void ToggleFireMode()
         {
-            int currentFireModeNum = this.availableFireModes.IndexOf(this.currentFireModeInt);
-            currentFireModeNum = (currentFireModeNum + 1) % this.availableFireModes.Count;
-            this.currentFireModeInt = this.availableFireModes.ElementAt(currentFireModeNum);
+            int currentFireModeNum = availableFireModes.IndexOf(currentFireModeInt);
+            currentFireModeNum = (currentFireModeNum + 1) % availableFireModes.Count;
+            currentFireModeInt = availableFireModes.ElementAt(currentFireModeNum);
         }
 
         public void ToggleAimMode()
         {
-            int currentAimModeNum = this.availableAimModes.IndexOf(this.currentAimModeInt);
-            currentAimModeNum = (currentAimModeNum + 1) % this.availableAimModes.Count;
-            this.currentAimModeInt = this.availableAimModes.ElementAt(currentAimModeNum);
+            int currentAimModeNum = availableAimModes.IndexOf(currentAimModeInt);
+            currentAimModeNum = (currentAimModeNum + 1) % availableAimModes.Count;
+            currentAimModeInt = availableAimModes.ElementAt(currentAimModeNum);
         }
 
         /// <summary>
@@ -139,13 +139,13 @@ namespace Combat_Realism
         /// </summary>
         public void ResetModes()
         {
-            this.currentFireModeInt = this.availableFireModes.ElementAt(0);
-            this.currentAimModeInt = this.availableAimModes.ElementAt(0);
+            currentFireModeInt = availableFireModes.ElementAt(0);
+            currentAimModeInt = availableAimModes.ElementAt(0);
         }
 
         public override IEnumerable<Command> CompGetGizmosExtra()
         {
-            if (this.casterPawn != null && this.casterPawn.Faction.Equals(Faction.OfPlayer))
+            if (casterPawn != null && casterPawn.Faction.Equals(Faction.OfPlayer))
             {
                 foreach(Command com in GenerateGizmos())
                 {
@@ -156,21 +156,21 @@ namespace Combat_Realism
 
         public IEnumerable<Command> GenerateGizmos()
         {
-            var toggleFireModeGizmo = new Command_Action
+            Command_Action toggleFireModeGizmo = new Command_Action
             {
-                action = this.ToggleFireMode,
-                defaultLabel = ("CR_" + this.currentFireMode.ToString() + "Label").Translate(),
+                action = ToggleFireMode,
+                defaultLabel = ("CR_" + currentFireMode.ToString() + "Label").Translate(),
                 defaultDesc = "CR_ToggleFireModeDesc".Translate(),
-                icon = ContentFinder<Texture2D>.Get(("UI/Buttons/" + this.currentFireMode.ToString()), true)
+                icon = ContentFinder<Texture2D>.Get(("UI/Buttons/" + currentFireMode.ToString()), true)
             };
             yield return toggleFireModeGizmo;
 
-            var toggleAimModeGizmo = new Command_Action
+            Command_Action toggleAimModeGizmo = new Command_Action
             {
-                action = this.ToggleAimMode,
-                defaultLabel = ("CR_" + this.currentAimMode.ToString() + "Label").Translate(),
+                action = ToggleAimMode,
+                defaultLabel = ("CR_" + currentAimMode.ToString() + "Label").Translate(),
                 defaultDesc = "CR_ToggleAimModeDesc".Translate(),
-                icon = ContentFinder<Texture2D>.Get(("UI/Buttons/" + this.currentAimMode.ToString()), true)
+                icon = ContentFinder<Texture2D>.Get(("UI/Buttons/" + currentAimMode.ToString()), true)
             };
             yield return toggleAimModeGizmo;
         }
@@ -178,16 +178,16 @@ namespace Combat_Realism
         public override string GetDescriptionPart()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            if (this.availableFireModes.Count > 0)
+            if (availableFireModes.Count > 0)
             {
                 stringBuilder.AppendLine("CR_FireModes".Translate() + ": ");
-                foreach (FireMode fireMode in this.availableFireModes)
+                foreach (FireMode fireMode in availableFireModes)
                 {
                     stringBuilder.AppendLine("   -" + ("CR_" + fireMode.ToString() + "Label").Translate());
                 }
-                if (this.Props.aimedBurstShotCount > 0 && this.availableFireModes.Contains(FireMode.BurstFire))
+                if (Props.aimedBurstShotCount > 0 && availableFireModes.Contains(FireMode.BurstFire))
                 {
-                    stringBuilder.AppendLine("CR_AimedBurstCount".Translate() + ": " + GenText.ToStringByStyle(this.Props.aimedBurstShotCount, ToStringStyle.Integer));
+                    stringBuilder.AppendLine("CR_AimedBurstCount".Translate() + ": " + GenText.ToStringByStyle(Props.aimedBurstShotCount, ToStringStyle.Integer));
                 }
             }
             return stringBuilder.ToString();

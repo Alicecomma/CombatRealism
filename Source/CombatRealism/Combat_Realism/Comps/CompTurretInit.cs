@@ -14,7 +14,7 @@ namespace Combat_Realism
         {
             get
             {
-                return (CompProperties_TurretInit)this.props;
+                return (CompProperties_TurretInit)props;
             }
         }
         public Thing gun;

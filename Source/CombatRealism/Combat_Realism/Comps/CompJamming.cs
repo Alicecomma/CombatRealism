@@ -14,7 +14,7 @@ namespace Combat_Realism
         {
             get
             {
-                return (CompProperties_Jamming)this.props;
+                return (CompProperties_Jamming)props;
             }
         }
 
@@ -25,17 +25,17 @@ namespace Combat_Realism
             {
                 if (verbInt == null)
                 {
-                    CompEquippable compEquippable = this.parent.TryGetComp<CompEquippable>();
+                    CompEquippable compEquippable = parent.TryGetComp<CompEquippable>();
                     if (compEquippable != null)
                     {
-                        this.verbInt = compEquippable.PrimaryVerb;
+                        verbInt = compEquippable.PrimaryVerb;
                     }
                     else
                     {
-                        Log.ErrorOnce(this.parent.LabelCap + " has CompJamming but no CompEquippable.", 50010);
+                        Log.ErrorOnce(parent.LabelCap + " has CompJamming but no CompEquippable.", 50010);
                     }
                 }
-                return this.verbInt;
+                return verbInt;
             }
         }
 
@@ -45,7 +45,7 @@ namespace Combat_Realism
         /// <returns>Quality-based scale factor</returns>
         private float GetQualityFactor()
         {
-            CompQuality compQuality = this.parent.TryGetComp<CompQuality>();
+            CompQuality compQuality = parent.TryGetComp<CompQuality>();
             if (compQuality != null)
             {
                 switch (compQuality.Quality)
@@ -75,12 +75,12 @@ namespace Combat_Realism
 
         public void DoMalfunction()
         {
-            float jamChance = this.Props.baseMalfunctionChance * (1 - this.parent.HitPoints / this.parent.MaxHitPoints) * this.GetQualityFactor();
+            float jamChance = Props.baseMalfunctionChance * (1 - parent.HitPoints / parent.MaxHitPoints) * GetQualityFactor();
             float explodeChance = Mathf.Clamp01(jamChance);
 
-            if (this.Props.canExplode && UnityEngine.Random.value < explodeChance)
+            if (Props.canExplode && UnityEngine.Random.value < explodeChance)
             {
-                this.Explode();
+                Explode();
             }
             if (UnityEngine.Random.value < jamChance)
             {
@@ -93,9 +93,9 @@ namespace Combat_Realism
         /// </summary>
         private void Explode()
         {
-            if (!this.parent.Destroyed)
+            if (!parent.Destroyed)
             {
-                this.parent.Destroy(DestroyMode.Vanish);
+                parent.Destroy(DestroyMode.Vanish);
             }
             // TODO
         }

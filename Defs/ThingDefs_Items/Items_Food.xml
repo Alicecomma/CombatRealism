@@ -31,6 +31,7 @@
     <ingestible>
       <foodType>Meal, Processed</foodType>
       <maxNumToIngestAtOnce>1</maxNumToIngestAtOnce>
+      <optimalityOffset>16</optimalityOffset>
     </ingestible>
   </ThingDef>
 
@@ -58,8 +59,8 @@
     <ingestible>
       <preferability>MealFine</preferability>
       <nutrition>0.90</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>Meal_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>Meal_Eat</ingestSound>
     </ingestible>
   </ThingDef>
 
@@ -78,8 +79,8 @@
     <ingestible>
       <preferability>MealAwful</preferability>
       <nutrition>0.90</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>Meal_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>Meal_Eat</ingestSound>
     </ingestible>
   </ThingDef>
 
@@ -99,8 +100,8 @@
     <ingestible>
       <preferability>MealSimple</preferability>
       <nutrition>0.85</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>Meal_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>Meal_Eat</ingestSound>
     </ingestible>
   </ThingDef>
 
@@ -120,8 +121,8 @@
     <ingestible>
       <preferability>MealFine</preferability>
       <nutrition>0.90</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>Meal_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>Meal_Eat</ingestSound>
     </ingestible>
   </ThingDef>
 
@@ -141,8 +142,8 @@
     <ingestible>
       <preferability>MealLavish</preferability>
       <nutrition>1.00</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>Meal_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>Meal_Eat</ingestSound>
     </ingestible>
   </ThingDef>
 
@@ -157,8 +158,8 @@
       <texPath>Things/Item/Resource/Kibble</texPath>
     </graphicData>
     <statBases>
-      <MarketValue>2.1</MarketValue>
-	  <Weight>0.1</Weight>
+      <MarketValue>1.3</MarketValue>
+      <Weight>0.1</Weight>
 	  <Bulk>0.2</Bulk>
     </statBases>
     <ingestible>
@@ -166,12 +167,9 @@
       <preferability>RawBad</preferability>
       <tastesRaw>true</tastesRaw>
       <nutrition>0.05</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>RawVegetable_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>RawVegetable_Eat</ingestSound>
     </ingestible>
-    <comps>
-      <li Class="CompProperties_FoodPoisoningChance" />
-    </comps>
   </ThingDef>
 
   <ThingDef ParentName="OrganicProductBase">
@@ -179,7 +177,7 @@
     <label>pemmican</label>
     <thingClass>ThingWithComps</thingClass>
     <thingCategories>
-      <li>FoodMeals</li>
+      <li>Foods</li>
     </thingCategories>
     <description>A preserved mashed mixture of fat and plant food. Tastes bland, but not offensive. It lasts a very long time without refrigeration.</description>
     <graphicData>
@@ -196,8 +194,8 @@
       <foodType>Meal</foodType>
       <preferability>MealSimple</preferability>
       <nutrition>0.05</nutrition>
-      <eatEffect>EatVegetarian</eatEffect>
-      <soundEat>Meal_Eat</soundEat>
+      <ingestEffect>EatVegetarian</ingestEffect>
+      <ingestSound>Meal_Eat</ingestSound>
     </ingestible>
     <comps>
       <li Class="CompProperties_Rottable">

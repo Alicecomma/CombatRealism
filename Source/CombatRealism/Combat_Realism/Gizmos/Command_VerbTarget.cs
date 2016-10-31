@@ -14,13 +14,13 @@ namespace Combat_Realism
     {
         public Verb verb;
 
-        protected override Color IconDrawColor
+        public override Color IconDrawColor
         {
             get
             {
-                if (this.verb.ownerEquipment != null)
+                if (verb.ownerEquipment != null)
                 {
-                    return this.verb.ownerEquipment.DrawColor;
+                    return verb.ownerEquipment.DrawColor;
                 }
                 return base.IconDrawColor;
             }
@@ -31,9 +31,9 @@ namespace Combat_Realism
             base.ProcessInput(ev);
             SoundDefOf.TickTiny.PlayOneShotOnCamera();
             Targeter targeter = Find.Targeter;
-            if (this.verb.CasterIsPawn && targeter.targetingVerb != null && targeter.targetingVerb.verbProps == this.verb.verbProps)
+            if (verb.CasterIsPawn && targeter.targetingVerb != null && targeter.targetingVerb.verbProps == verb.verbProps)
             {
-                Pawn casterPawn = this.verb.CasterPawn;
+                Pawn casterPawn = verb.CasterPawn;
                 if (!targeter.IsPawnTargeting(casterPawn))
                 {
                     targeter.targetingVerbAdditionalPawns.Add(casterPawn);
@@ -41,8 +41,9 @@ namespace Combat_Realism
             }
             else
             {
-                Find.Targeter.BeginTargeting(this.verb);
+                Find.Targeter.BeginTargeting(verb);
             }
         }
     }
 }
+

@@ -54,7 +54,7 @@ namespace Combat_Realism
             if (ammo == null) return null;
             int amountNeeded = turret.compAmmo.Props.magazineSize;
             if (turret.compAmmo.currentAmmo == turret.compAmmo.selectedAmmo) amountNeeded -= turret.compAmmo.curMagCount;
-            return new Job(DefDatabase<JobDef>.GetNamed("ReloadTurret"), t, ammo) { maxNumToCarry = Mathf.Min(amountNeeded, ammo.stackCount) };
+            return new Job(CR_JobDefOf.ReloadTurret, t, ammo) { maxNumToCarry = Mathf.Min(amountNeeded, ammo.stackCount) };
         }
 
 

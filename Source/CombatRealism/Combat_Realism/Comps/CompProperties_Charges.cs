@@ -15,7 +15,7 @@ namespace Combat_Realism
 
         public CompProperties_Charges()
         {
-            this.compClass = typeof(CompCharges);
+            compClass = typeof(CompCharges);
         }
     }
 }

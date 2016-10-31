@@ -15,7 +15,7 @@ namespace Combat_Realism
         {
             get
             {
-                return (CompProperties_ExplosiveCR)this.props;
+                return (CompProperties_ExplosiveCR)props;
             }
         }
 
@@ -27,10 +27,10 @@ namespace Combat_Realism
         /// Additionally handles fragmentation effects if defined.
         /// </summary>
         /// <param name="instigator">Launcher of the projectile calling the method</param>
-		public virtual void Explode(Thing instigator, Verse.IntVec3 pos)
+		public virtual void Explode(Thing instigator, IntVec3 pos)
         {
             // Regular explosion stuff
-            if (this.Props.explosionRadius > 0 && this.Props.explosionDamage > 0)
+            if (Props.explosionRadius > 0 && Props.explosionDamage > 0)
             {
                 Explosion explosion = new Explosion();
                 explosion.position = pos;
@@ -52,14 +52,14 @@ namespace Combat_Realism
             {
                 if (Props.fragRange <= 0)
                 {
-                    Log.Error(this.parent.LabelCap + " has fragments but no fragRange");
+                    Log.Error(parent.LabelCap + " has fragments but no fragRange");
                 }
 
                 else
                 {
                     Vector3 exactOrigin = new Vector3(0, 0, 0);
-                    exactOrigin.x = this.parent.DrawPos.x;
-                    exactOrigin.z = this.parent.DrawPos.z;
+                    exactOrigin.x = parent.DrawPos.x;
+                    exactOrigin.z = parent.DrawPos.z;
 
                     foreach (ThingCount fragment in Props.fragments)
                     {
@@ -69,7 +69,7 @@ namespace Combat_Realism
                             projectile.canFreeIntercept = true;
                             Vector3 exactTarget = exactOrigin + (new Vector3(1, 0, 1) * UnityEngine.Random.Range(0, Props.fragRange)).RotatedBy(UnityEngine.Random.Range(0, 360));
                             TargetInfo targetCell = exactTarget.ToIntVec3();
-                            GenSpawn.Spawn(projectile, this.parent.Position);
+                            GenSpawn.Spawn(projectile, parent.Position);
                             projectile.Launch(instigator, exactOrigin, targetCell, exactTarget, null);
                         }
                     }
