@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ThingDefs>
 
   <ThingDef ParentName="BuildingBase">
@@ -18,24 +18,26 @@
       <texPath>Things/Building/Linked/Sandbags_Blueprint_Atlas</texPath>
     </blueprintGraphicData>
     <uiIconPath>Things/Building/Linked/Sandbags_MenuIcon</uiIconPath>
-    <AltitudeLayer>Building</AltitudeLayer>
+    <altitudeLayer>Building</altitudeLayer>
     <pathCost>40</pathCost>
+    <pathCostIgnoreRepeat>true</pathCostIgnoreRepeat>
     <passability>PassThroughOnly</passability>
     <castEdgeShadows>true</castEdgeShadows>
     <fillPercent>0.65</fillPercent>
     <statBases>
       <MaxHitPoints>450</MaxHitPoints>
       <Beauty>-10</Beauty>
-      <WorkToMake>180</WorkToMake>
+      <WorkToBuild>180</WorkToBuild>
       <Flammability>0</Flammability>
     </statBases>
     <building>
+      <ai_chillDestination>false</ai_chillDestination>
       <isInert>true</isInert>
     </building>
     <description>Cover from gunfire.</description>
     <placingDraggableDimensions>1</placingDraggableDimensions>
     <costList>
-      <Steel>3</Steel>
+      <Steel>6</Steel>
     </costList>
     <filthLeaving>SandbagRubble</filthLeaving>
     <rotatable>false</rotatable>
@@ -49,9 +51,44 @@
     <designationHotKey>Misc1</designationHotKey>
   </ThingDef>
 
-
+  <!-- gun def for artillery, never used as an independent thing-->
+  <ThingDef Name="BaseArtilleryWeapon" Abstract="True">
+    <category>Item</category>
+    <thingClass>ThingWithComps</thingClass>
+    <label>artillery error</label>
+    <equipmentType>Primary</equipmentType>
+    <graphicData>
+      <texPath>Things/Item/Equipment/WeaponRanged/ChargeRifle</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <tickerType>Never</tickerType>
+    <techLevel>Industrial</techLevel>
+    <destroyOnDrop>True</destroyOnDrop>
+    <menuHidden>True</menuHidden>
+    <tradeability>Never</tradeability>
+    <soundInteract>ArtilleryShellLoaded</soundInteract>
+    <comps>
+      <li>
+        <compClass>CompEquippable</compClass>
+      </li>
+      <li Class="Combat_Realism.CompProperties_Charges">
+        <charges>
+          <li>(29,85)</li>
+          <li>(72,300)</li>
+          <li>(92,660)</li>
+        </charges>
+      </li>
+      <li Class="Combat_Realism.CompProperties_AmmoUser">
+        <magazineSize>1</magazineSize>
+        <reloadTicks>150</reloadTicks>
+        <spawnUnloaded>true</spawnUnloaded>
+        <ammoSet>AmmoSet_81mmMortarShell</ammoSet>
+      </li>
+    </comps>
+  </ThingDef>
 
   <!--=============== Improvised turret ===============-->
+
   <ThingDef ParentName="BuildingBase">
     <defName>TurretGun</defName>
     <label>auto-turret</label>
@@ -64,20 +101,25 @@
         <rect>(0.2,0.2,0.6,0.6)</rect>
       </damageData>
     </graphicData>
-		<tradeability>Stockable</tradeability>
-    <AltitudeLayer>Building</AltitudeLayer>
+    <minifiedDef>MinifiedFurniture</minifiedDef>
+    <altitudeLayer>Building</altitudeLayer>
+    <stealable>false</stealable>
+    <rotatable>false</rotatable>
     <statBases>
       <MaxHitPoints>100</MaxHitPoints>
       <Flammability>1.0</Flammability>
-      <WorkToMake>20000</WorkToMake>
+      <WorkToBuild>2500</WorkToBuild>
+      <Mass>100</Mass>
       <Beauty>-60</Beauty>
-      <Weight>16</Weight>
-      <Bulk>20</Bulk>
     </statBases>
     <tickerType>Normal</tickerType>
-    <minifiedDef>MinifiedTurretGun</minifiedDef>
     <comps>
       <li Class="Combat_Realism.CompProperties_TurretInit"/>
+      <li Class="CompProperties_Explosive">
+        <explosiveRadius>3.9</explosiveRadius>
+        <explosiveDamageType>Bomb</explosiveDamageType>
+        <chanceNeverExplodeFromDamage>0.5</chanceNeverExplodeFromDamage>
+      </li>
       <li Class="CompProperties_Forbiddable"/>
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
@@ -86,10 +128,10 @@
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
     </comps>
-    <description>An AI-controlled turret that automatically fires at nearby enemies.</description>
+    <description>An improvised turret that automatically fires at nearby enemies. Explodes when damaged. Its hacked-together AI brain isn't very smart, and can't be directly controlled, so beware of friendly fire.</description>
     <passability>PassThroughOnly</passability>
     <pathCost>50</pathCost>
-    <fillPercent>0.75</fillPercent>
+    <fillPercent>0.4</fillPercent>
     <castEdgeShadows>true</castEdgeShadows>
     <hasTooltip>true</hasTooltip>
     <stuffCategories>
@@ -109,7 +151,7 @@
         <li>TableMachining</li>
       </recipeUsers>
       <unfinishedThingDef>UnfinishedTurretGun</unfinishedThingDef>
-			<researchPrerequisite>CR_TurretAI</researchPrerequisite>
+      <researchPrerequisite>CR_TurretAI</researchPrerequisite>
       <skillRequirements>
         <li>
           <skill>Crafting</skill>
@@ -118,11 +160,12 @@
       </skillRequirements>
     </recipeMaker>
     <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+    <designationCategory>Security</designationCategory>
     <specialDisplayRadius>27</specialDisplayRadius>
     <building>
       <ai_combatDangerous>true</ai_combatDangerous>
       <turretGunDef>Gun_TurretImprovised</turretGunDef>
-      <turretBurstCooldownTicks>90</turretBurstCooldownTicks>
+      <turretBurstCooldownTime>1.1</turretBurstCooldownTime>
       <turretTopgraphicPath>Things/Building/Security/TurretImprovised_Top</turretTopgraphicPath>
     </building>
     <designationHotKey>Misc2</designationHotKey>
@@ -132,8 +175,8 @@
   </ThingDef>
 
   <!--=============== 81mm mortar ===============-->
-	
-  <ThingDef Name="MortarBase" ParentName="BuildingBase" Abstract="True">
+
+  <ThingDef Name="BaseArtilleryBuilding" ParentName="BuildingBase" Abstract="True">
     <label>81mm mortar</label>
     <description>A mortar that launches explosive shells. Must be manned.</description>
     <thingClass>Combat_Realism.Building_TurretGunCR</thingClass>
@@ -146,14 +189,17 @@
         <cornerTL>Damage/Corner</cornerTL>
       </damageData>
     </graphicData>
-    <AltitudeLayer>Building</AltitudeLayer>
+    <minifiedDef>MinifiedFurniture</minifiedDef>
+    <altitudeLayer>Building</altitudeLayer>
     <hasInteractionCell>True</hasInteractionCell>
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <stealable>false</stealable>
     <statBases>
       <MaxHitPoints>180</MaxHitPoints>
       <Flammability>1.0</Flammability>
-      <WorkToMake>2700</WorkToMake>
+      <WorkToBuild>2700</WorkToBuild>
       <Beauty>-60</Beauty>
+      <Mass>200</Mass>
     </statBases>
     <tickerType>Normal</tickerType>
     <comps>
@@ -176,10 +222,10 @@
     </costList>
     <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
     <building>
-      <turretGunDef>Artillery_81mmMortar</turretGunDef>
-      <turretShellDef>ArtilleryShell</turretShellDef>
-      <turretBurstWarmupTicks>300</turretBurstWarmupTicks>
-      <turretBurstCooldownTicks>300</turretBurstCooldownTicks>
+      <turretGunDef>Artillery_MortarBomb</turretGunDef>
+      <turretShellDef>MortarShell</turretShellDef>
+      <turretBurstwarmupTime>4.5</turretBurstwarmupTime>
+      <turretBurstCooldownTime>20.0</turretBurstCooldownTime>
       <turretTopgraphicPath>Things/Building/Security/TurretMortarBomb_Top</turretTopgraphicPath>
     </building>
     <placeWorkers>
@@ -188,10 +234,16 @@
     <researchPrerequisites><li>Mortars</li></researchPrerequisites>
   </ThingDef>
 
-  <!--=============== Mortar turret ===============-->
-	
-  <ThingDef ParentName="MortarBase">
+  <!-- ================= 81mm mortar ================= -->
+
+  <ThingDef ParentName="BaseArtilleryBuilding">
     <defName>Turret_MortarBomb</defName>
+    <comps>
+      <li Class="CompProperties_Explosive">
+        <explosiveRadius>4.9</explosiveRadius>
+        <explosiveDamageType>Bomb</explosiveDamageType>
+      </li>
+    </comps>
     <building>
       <buildingTags>
         <li>Artillery</li>
@@ -202,36 +254,128 @@
     <designationHotKey>Misc3</designationHotKey>
   </ThingDef>
 
+  <ThingDef ParentName="BaseArtilleryWeapon">
+    <defName>Artillery_MortarBomb</defName>
+    <label>81mm mortar</label>
+    <description>Lobs mortar shells on a high arc. Very inaccurate but long-ranged and capable of indirect fire.</description>
+    <techLevel>Spacer</techLevel>
+    <statBases>
+      <AimEfficiency>0.5</AimEfficiency>
+    </statBases>
+    <weaponTags>
+      <li>Artillery</li>
+      <li>Artillery_BaseDestroyer</li>
+    </weaponTags>
+    <verbs>
+      <li Class="Combat_Realism.VerbPropertiesCR">
+        <verbClass>Combat_Realism.Verb_ShootMortarCR</verbClass>
+        <forceNormalTimeSpeed>false</forceNormalTimeSpeed>
+        <hasStandardCommand>true</hasStandardCommand>
+        <projectileDef>Bullet_81mmMortarShell_HE</projectileDef>
+        <warmupTime>5.5</warmupTime>
+        <minRange>32</minRange>
+        <range>700</range>
+        <burstShotCount>1</burstShotCount>
+        <soundCast>Mortar_LaunchA</soundCast>
+        <muzzleFlashScale>16</muzzleFlashScale>
+        <indirectFirePenalty>0.2</indirectFirePenalty>
+        <targetParams>
+          <canTargetLocations>true</canTargetLocations>
+        </targetParams>
+      </li>
+    </verbs>
+  </ThingDef>
 
-  <!--=============== Mortar turret ===============-->
-	
-  <ThingDef ParentName="MortarBase">
+  <!-- ================== Incendiary mortar ================== -->
+
+  <ThingDef ParentName="BaseArtilleryBuilding">
     <defName>Turret_MortarIncendiary</defName>
     <building>
-      <turretShellDef>Artillery_81mmMortar</turretShellDef>
+      <turretShellDef>Artillery_MortarBomb</turretShellDef>
       <buildingTags>
         <li>Artillery</li>
         <li>Artillery_BaseDestroyer</li>
       </buildingTags>
     </building>
-		<menuHidden>true</menuHidden>
-    <researchPrerequisites><li>CommunityCoreLibraryResearchLocker</li></researchPrerequisites>
+    <menuHidden>true</menuHidden>
   </ThingDef>
 
-
+  <ThingDef ParentName="BaseArtilleryWeapon">
+    <defName>Artillery_MortarIncendiary</defName>
+    <label>incendiary mortar</label>
+    <description>Incendiary mortar launcher. Lobs fire-starting bombs over walls. Very inaccurate but long-ranged.</description>
+    <techLevel>Spacer</techLevel>
+    <statBases>
+      <AimEfficiency>0.5</AimEfficiency>
+    </statBases>
+    <weaponTags>
+      <li>Artillery</li>
+      <li>Artillery_BaseDestroyer</li>
+    </weaponTags>
+    <verbs>
+      <li Class="Combat_Realism.VerbPropertiesCR">
+        <verbClass>Combat_Realism.Verb_ShootMortarCR</verbClass>
+        <forceNormalTimeSpeed>false</forceNormalTimeSpeed>
+        <hasStandardCommand>true</hasStandardCommand>
+        <projectileDef>Bullet_81mmMortarShell_Incendiary</projectileDef>
+        <forcedMissRadius>10</forcedMissRadius>
+        <ai_IsIncendiary>true</ai_IsIncendiary>
+        <warmupTime>5.5</warmupTime>
+        <minRange>32</minRange>
+        <range>700</range>
+        <burstShotCount>1</burstShotCount>
+        <soundCast>Mortar_LaunchA</soundCast>
+        <muzzleFlashScale>16</muzzleFlashScale>
+        <indirectFirePenalty>0.2</indirectFirePenalty>
+        <targetParams>
+          <canTargetLocations>true</canTargetLocations>
+        </targetParams>
+      </li>
+    </verbs>
+  </ThingDef>
 
   <!--=============== Mortar EMP ===============-->
-	
-  <ThingDef ParentName="MortarBase">
+
+  <ThingDef ParentName="BaseArtilleryBuilding">
     <defName>Turret_MortarEMP</defName>
     <building>
-      <turretShellDef>Artillery_81mmMortar</turretShellDef>
+      <turretShellDef>Artillery_MortarBomb</turretShellDef>
       <buildingTags>
         <li>Artillery</li>
       </buildingTags>
     </building>
-		<menuHidden>true</menuHidden>
-    <researchPrerequisites><li>CommunityCoreLibraryResearchLocker</li></researchPrerequisites>
+    <menuHidden>true</menuHidden>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseArtilleryWeapon">
+    <defName>Artillery_MortarEMP</defName>
+    <label>EMP mortar</label>
+    <description>Mortar launcher. Lobs EMP bombs over walls. Very inaccurate but long-ranged.</description>
+    <techLevel>Spacer</techLevel>
+    <statBases>
+      <AimEfficiency>0.5</AimEfficiency>
+    </statBases>
+    <weaponTags>
+      <li>Artillery</li>
+    </weaponTags>
+    <verbs>
+      <li Class="Combat_Realism.VerbPropertiesCR">
+        <verbClass>Combat_Realism.Verb_ShootMortarCR</verbClass>
+        <forceNormalTimeSpeed>false</forceNormalTimeSpeed>
+        <hasStandardCommand>true</hasStandardCommand>
+        <projectileDef>Bullet_81mmMortarShell_EMP</projectileDef>
+        <forcedMissRadius>10</forcedMissRadius>
+        <warmupTime>5.5</warmupTime>
+        <minRange>32</minRange>
+        <range>700</range>
+        <burstShotCount>1</burstShotCount>
+        <soundCast>Mortar_LaunchA</soundCast>
+        <muzzleFlashScale>16</muzzleFlashScale>
+        <targetParams>
+          <canTargetLocations>true</canTargetLocations>
+        </targetParams>
+      </li>
+    </verbs>
   </ThingDef>
 
   <!--==================== Traps ======================== -->
@@ -247,13 +391,14 @@
         <rect>(0,0,1,0.15)</rect>
       </damageData>
     </graphicData>
-    <AltitudeLayer>Building</AltitudeLayer>
+    <altitudeLayer>Building</altitudeLayer>
     <drawerType>RealtimeOnly</drawerType>
     <rotatable>false</rotatable>
     <tickerType>Normal</tickerType>
+    <stealable>false</stealable>
     <statBases>
       <MaxHitPoints>40</MaxHitPoints>
-      <WorkToMake>2000</WorkToMake>
+      <WorkToBuild>2000</WorkToBuild>
       <Beauty>-4</Beauty>
       <TrapMeleeDamage>60</TrapMeleeDamage>
       <TrapSpringChance>0.8</TrapSpringChance>
@@ -278,8 +423,6 @@
     </building>
   </ThingDef>
 
-
-
   <ThingDef ParentName="BuildingBase">
     <defName>TrapIEDBomb</defName>
     <label>IED trap</label>
@@ -291,19 +434,20 @@
         <rect>(0.1,0,0.8,0.3)</rect>
       </damageData>
     </graphicData>
-    <AltitudeLayer>Building</AltitudeLayer>
+    <altitudeLayer>Building</altitudeLayer>
     <drawerType>RealtimeOnly</drawerType>
     <rotatable>false</rotatable>
     <tickerType>Normal</tickerType>
+    <stealable>false</stealable>
     <statBases>
       <MaxHitPoints>40</MaxHitPoints>
-      <WorkToMake>2000</WorkToMake>
+      <WorkToBuild>2000</WorkToBuild>
       <Beauty>-4</Beauty>
       <TrapSpringChance>0.8</TrapSpringChance>
     </statBases>
     <description>An artillery shell connected to a homemade trigger. When someone disturbs the trigger, the shell explodes. The improvised trigger has a random delay that might allow a nimble enemy to escape.</description>
     <costList>
-      <ArtilleryShell>1</ArtilleryShell>
+      <MortarShell>1</MortarShell>
       <Component>1</Component>
     </costList>
     <designationCategory>Security</designationCategory>
@@ -325,8 +469,6 @@
     <researchPrerequisites><li>IEDBomb</li></researchPrerequisites>
   </ThingDef>
 
-
-
   <ThingDef ParentName="BuildingBase">
     <defName>TrapIEDIncendiary</defName>
     <label>IED incendiary trap</label>
@@ -338,13 +480,14 @@
         <rect>(0.1,0,0.8,0.3)</rect>
       </damageData>
     </graphicData>
-    <AltitudeLayer>Building</AltitudeLayer>
+    <altitudeLayer>Building</altitudeLayer>
     <drawerType>RealtimeOnly</drawerType>
     <rotatable>false</rotatable>
     <tickerType>Normal</tickerType>
+    <stealable>false</stealable>
     <statBases>
       <MaxHitPoints>40</MaxHitPoints>
-      <WorkToMake>2000</WorkToMake>
+      <WorkToBuild>2000</WorkToBuild>
       <Beauty>-4</Beauty>
       <TrapSpringChance>0.8</TrapSpringChance>
     </statBases>
@@ -371,6 +514,5 @@
     </comps>
     <researchPrerequisites><li>IEDIncendiary</li></researchPrerequisites>
   </ThingDef>
-  
-  
+
 </ThingDefs>

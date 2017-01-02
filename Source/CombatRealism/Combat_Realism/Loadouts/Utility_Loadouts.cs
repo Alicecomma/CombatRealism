@@ -170,13 +170,15 @@ namespace Combat_Realism
         public static string GetWeightTip(this ThingDef def, int count = 1)
         {
             return
-                "CR.Weight".Translate() + ": " + CR_StatDefOf.Weight.ValueToString(def.GetStatValueAbstract(CR_StatDefOf.Weight) * count, CR_StatDefOf.Weight.toStringNumberSense);
+                "CR.Weight".Translate() + ": " + StatDefOf.Mass.ValueToString(def.GetStatValueAbstract(StatDefOf.Mass) * count, StatDefOf.Mass.toStringNumberSense);
+            //old "CR.Weight".Translate() + ": " + CR_StatDefOf.Weight.ValueToString(def.GetStatValueAbstract(CR_StatDefOf.Weight) * count, CR_StatDefOf.Weight.toStringNumberSense);
         }
 
         public static string GetWeightTip(this Thing thing, int count = 1)
         {
             return
-                "CR.Weight".Translate() + ": " + CR_StatDefOf.Weight.ValueToString(thing.GetStatValue(CR_StatDefOf.Weight) * count, CR_StatDefOf.Weight.toStringNumberSense);
+                "CR.Weight".Translate() + ": " + StatDefOf.Mass.ValueToString(thing.GetStatValue(StatDefOf.Mass) * count, StatDefOf.Mass.toStringNumberSense);
+           //old "CR.Weight".Translate() + ": " + CR_StatDefOf.Weight.ValueToString(thing.GetStatValue(CR_StatDefOf.Weight) * count, CR_StatDefOf.Weight.toStringNumberSense);
         }
 
         public static string GetWeightTip(this Loadout loadout)

@@ -62,7 +62,7 @@ namespace Combat_Realism
             Job jobNew = new Job(DefDatabase<JobDef>.GetNamed("PutInInventory"));
             jobNew.maxNumToCarry = 1;
             jobNew.targetB = backpack;
-            jobNew.targetQueueA = new List<TargetInfo>();
+            jobNew.targetQueueA = new List<LocalTargetInfo>();
 
             while (!designations.NullOrEmpty())
             {

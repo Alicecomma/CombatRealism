@@ -5,7 +5,6 @@ using System.Text;
 using RimWorld;
 using Verse;
 using UnityEngine;
-using CommunityCoreLibrary;
 
 namespace Combat_Realism
 {

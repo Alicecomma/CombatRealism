@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ThingDefs>
 
   <ThingDef Name="BuildingNaturalBase" Abstract="True">
@@ -6,6 +6,7 @@
     <selectable>true</selectable>
     <drawerType>MapMeshOnly</drawerType>
     <filthLeaving>RockRubble</filthLeaving>
+    <scatterableOnMapGen>false</scatterableOnMapGen>
     <damageMultipliers>
       <li>
         <damageDef>Bomb</damageDef>
@@ -29,7 +30,6 @@
       </li>
     </damageMultipliers>
   </ThingDef>
-
 
   <ThingDef Name="RockBase" ParentName="BuildingNaturalBase" Abstract="True" >
     <thingClass>Mineable</thingClass>
@@ -66,9 +66,7 @@
     </building>
   </ThingDef>
 
-
   <!--============================ Simple mineables ===============================-->
-
 
   <ThingDef ParentName="RockBase">
     <defName>CollapsedRocks</defName>
@@ -90,11 +88,8 @@
     </building>
   </ThingDef>
 
-
-
   <!--============================ Resource rocks ===============================-->
-  
-  
+
   <ThingDef ParentName="RockBase">
     <defName>MineableSteel</defName>
     <label>compacted steel</label>
@@ -147,7 +142,6 @@
     </building>
   </ThingDef>
 
-
   <ThingDef ParentName="RockBase">
     <defName>MineableGold</defName>
     <label>gold ore</label>
@@ -173,7 +167,6 @@
       </mineableScatterLumpSizeRange>
     </building>
   </ThingDef>
-
 
   <ThingDef ParentName="RockBase">
     <defName>MineableUranium</defName>
@@ -201,8 +194,6 @@
     </building>
   </ThingDef>
 
-
-
   <ThingDef ParentName="RockBase">
     <defName>MineablePlasteel</defName>
     <label>compacted plasteel</label>
@@ -229,7 +220,6 @@
     </building>
   </ThingDef>
 
-  
   <ThingDef ParentName="RockBase">
     <defName>MineableJade</defName>
     <label>jade</label>
@@ -255,8 +245,7 @@
       </mineableScatterLumpSizeRange>
     </building>
   </ThingDef>
-  
-  
+
   <ThingDef ParentName="RockBase">
     <defName>MineableComponents</defName>
     <label>compacted machinery</label>
@@ -280,7 +269,7 @@
       </mineableScatterLumpSizeRange>
     </building>
   </ThingDef>
-  
+
   <ThingDef ParentName="BuildingNaturalBase">
     <defName>SteamGeyser</defName>
     <thingClass>Building_SteamGeyser</thingClass>
@@ -292,6 +281,7 @@
       <drawSize>(4,4)</drawSize>
     </graphicData>
     <altitudeLayer>Floor</altitudeLayer>
+    <rotatable>false</rotatable>
     <destroyable>false</destroyable>
     <useHitPoints>false</useHitPoints>
     <tickerType>Normal</tickerType>
@@ -372,6 +362,5 @@
       </li>
     </comps>
   </ThingDef>
-
 
 </ThingDefs>

@@ -42,10 +42,11 @@ namespace Combat_Realism
             {
 
                 List<ThingDef> listammo = (from ThingDef g in compAmmo.Props.ammoSet.ammoTypes
-                                        select g).ToList<ThingDef>();
-                ThingDef randomammo = GenCollection.RandomElement<ThingDef>(listammo);
-                if (randomammo.canBeSpawningInventory)
+                                           where g.canBeSpawningInventory
+                                           select g).ToList<ThingDef>();
+                if (!listammo.NullOrEmpty())
                 {
+                    ThingDef randomammo = GenCollection.RandomElement<ThingDef>(listammo);
                     availableDefs.Add(randomammo);
                 }
                 else return;

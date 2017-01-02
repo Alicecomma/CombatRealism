@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PawnKindDefs>
 
   <PawnKindDef>
@@ -12,6 +12,7 @@
     <backstoryCryptosleepCommonality>1</backstoryCryptosleepCommonality>
     <maxGenerationAge>58</maxGenerationAge>
     <itemQuality>Good</itemQuality>
+    <chemicalAddictionChance>0.08</chemicalAddictionChance>
     <apparelMoney>
       <min>0</min>
       <max>4000</max>
@@ -32,18 +33,20 @@
       <min>1000</min>
       <max>5000</max>
     </techHediffsMoney>
+    <combatEnhancingDrugsCount>
+      <min>0</min>
+      <max>2</max>
+    </combatEnhancingDrugsCount>
     <techHediffsTags>
       <li>Advanced</li>
     </techHediffsTags>
     <techHediffsChance>0.3</techHediffsChance>
-	<fixedInventory>
-	  <LoadoutGen_MercAmmoPrimary>1</LoadoutGen_MercAmmoPrimary>
-	  <LoadoutGen_MercSidearmMelee>1</LoadoutGen_MercSidearmMelee>
-	  <LoadoutGen_MercSidearm>1</LoadoutGen_MercSidearm>
-	  <LoadoutGen_MercSidearmAmmo>1</LoadoutGen_MercSidearmAmmo>
-	</fixedInventory>
+    <fixedInventory>
+      <LoadoutGen_MercAmmoPrimary>1</LoadoutGen_MercAmmoPrimary>
+      <LoadoutGen_MercSidearmMelee>1</LoadoutGen_MercSidearmMelee>
+      <LoadoutGen_MercSidearm>1</LoadoutGen_MercSidearm>
+      <LoadoutGen_MercSidearmAmmo>1</LoadoutGen_MercSidearmAmmo>
+    </fixedInventory>
   </PawnKindDef>
-
-
 
 </PawnKindDefs>

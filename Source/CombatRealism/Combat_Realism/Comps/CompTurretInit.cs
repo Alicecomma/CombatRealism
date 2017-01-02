@@ -37,7 +37,7 @@ namespace Combat_Realism
 
         /*public override void PostSpawnSetup()
         {
-            base.PostSpawnSetup();
+            base.PostSpawnSetup(map);
             //It just needed first time.
             if (gun != null)
             {

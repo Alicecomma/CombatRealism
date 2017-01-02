@@ -26,35 +26,10 @@
     <staticSunShadowHeight>1.0</staticSunShadowHeight>
     <forceDebugSpawnable>true</forceDebugSpawnable>
     <building>
+      <claimable>false</claimable>
       <soundAmbient>CrashedShipPart_Ambience</soundAmbient>
       <roofCollapseDamageMultiplier>0.2</roofCollapseDamageMultiplier>
     </building>
-    <damageMultipliers>
-      <li>
-        <damageDef>Bomb</damageDef>
-        <multiplier>2.5</multiplier>
-      </li>
-      <li>
-        <damageDef>Thermobaric</damageDef>
-        <multiplier>2.5</multiplier>
-      </li>
-      <li>
-        <damageDef>Bullet</damageDef>
-        <multiplier>0.2</multiplier>
-      </li>
-      <li>
-        <damageDef>Fragment</damageDef>
-        <multiplier>0.1</multiplier>
-      </li>
-      <li>
-        <damageDef>Arrow</damageDef>
-        <multiplier>0.05</multiplier>
-      </li>
-      <li>
-        <damageDef>Electrical</damageDef>
-        <multiplier>0.2</multiplier>
-      </li>
-    </damageMultipliers>
   </ThingDef>
 
   <ThingDef ParentName="ShipPartBase">

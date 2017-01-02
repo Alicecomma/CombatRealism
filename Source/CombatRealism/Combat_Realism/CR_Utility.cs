@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Combat_Realism
 {
-   public static class CR_Utility
+    static class CR_Utility
     {
         #region Misc
 
@@ -36,8 +36,8 @@ namespace Combat_Realism
         public static float GetMoveSpeed(Pawn pawn)
         {
             float movePerTick = 60 / pawn.GetStatValue(StatDefOf.MoveSpeed, false);    //Movement per tick
-            movePerTick += PathGrid.CalculatedCostAt(pawn.Position, false, pawn.Position);
-            Building edifice = pawn.Position.GetEdifice();
+            movePerTick +=  pawn.Map.pathGrid.CalculatedCostAt(pawn.Position, false, pawn.Position);
+            Building edifice = pawn.Position.GetEdifice(pawn.Map);
             if (edifice != null)
             {
                 movePerTick += (int)edifice.PathWalkCostFor(pawn);
@@ -94,10 +94,10 @@ namespace Combat_Realism
 
         #endregion Misc
 
-        #region MoteMaker
-        public static void ThrowEmptyCasing(Vector3 loc, ThingDef casingMoteDef, float size = 1f)
+        #region MoteThrower
+        public static void ThrowEmptyCasing(Vector3 loc, Map map, ThingDef casingMoteDef, float size = 1f)
         {
-            if (!loc.ShouldSpawnMotesAt() || MoteCounter.SaturatedLowPriority)
+            if (!loc.ShouldSpawnMotesAt(map) || map.moteCounter.SaturatedLowPriority)
             {
                 return;
             }
@@ -106,9 +106,9 @@ namespace Combat_Realism
             moteThrown.exactRotation = Rand.Range(-3f, 4f);
             moteThrown.exactPosition = loc;
             moteThrown.airTimeLeft = 60;
-            moteThrown.SetVelocity((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
-       //     moteThrown.SetVelocityAngleSpeed((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
-            GenSpawn.Spawn(moteThrown, loc.ToIntVec3());
+            moteThrown.SetVelocity((float)Rand.Range(160, 200), Rand.Range(0.7f, 0.5f));
+            //     moteThrown.SetVelocityAngleSpeed((float)Rand.Range(160, 200), Rand.Range(0.020f, 0.0115f));
+            GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
         }
         #endregion
 
@@ -118,7 +118,7 @@ namespace Combat_Realism
         public const float collisionHeightFactor = 1.0f;
         public const float collisionWidthFactor = 0.5f;
         public const float collisionWidthFactorHumanoid = 0.25f;
-        public static readonly String[] humanoidBodyList = { "Human", "Scyther" };
+        public static readonly String[] humanoidBodyList = { "Human", "Scyther", "Orassan", "Ogre", "HumanoidTerminator" };
         /// <summary>
         /// Returns the collision height of a Thing
         /// </summary>
@@ -174,22 +174,24 @@ namespace Combat_Realism
             {
                 return damAmountInt;
             }
-
             float damageAmount = (float)damAmountInt;
             StatDef deflectionStat = damageDef.armorCategory.DeflectionStat();
-
             // Get armor penetration value
             float pierceAmount = 0f;
-            if (dinfo.Source != null)
+            if (dinfo.WeaponGear != null)
             {
-                ProjectilePropertiesCR projectileProps = dinfo.Source.projectile as ProjectilePropertiesCR;
-                if (projectileProps != null)
+                Pawn instigatorPawn = dinfo.Instigator as Pawn;
+                if (dinfo.WeaponGear.Verbs.Find(s => s.projectileDef != null) != null)
                 {
-                    pierceAmount = projectileProps.armorPenetration;
+                   ProjectilePropertiesCR projectileProps = dinfo.WeaponGear.Verbs.Find(s => s.projectileDef != null).projectileDef.projectile as ProjectilePropertiesCR;
+              //     ProjectilePropertiesCR projectileProps = dinfo.WeaponGear.projectile as ProjectilePropertiesCR;
+                    if (projectileProps != null)
+                    {
+                        pierceAmount = projectileProps.armorPenetration;
+                    }
                 }
                 else if (dinfo.Instigator != null)
                 {
-                    Pawn instigatorPawn = dinfo.Instigator as Pawn;
                     if (instigatorPawn != null)
                     {
                         if (instigatorPawn.equipment != null && instigatorPawn.equipment.Primary != null)
@@ -204,6 +206,7 @@ namespace Combat_Realism
                 }
             }
 
+
             // Run armor calculations on all apparel
             if (pawn.apparel != null)
             {
@@ -213,7 +216,6 @@ namespace Combat_Realism
                     if (wornApparel[i].def.apparel.CoversBodyPart(part))
                     {
                         Thing armorThing = damageArmor ? wornApparel[i] : null;
-
                         //Check for deflection
                         if (ApplyArmor(ref damageAmount, ref pierceAmount, wornApparel[i].GetStatValue(deflectionStat, true), armorThing, damageDef))
                         {
@@ -233,27 +235,15 @@ namespace Combat_Realism
                 }
             }
             float pawnArmorAmount = 0f;
-            bool partCoveredByArmor = false;
-            if (part.IsInGroup(DefDatabase<BodyPartGroupDef>.GetNamed("CoveredByNaturalArmor")))
+            BodyPartRecord outerPart = part;
+            while (outerPart.parent != null && outerPart.depth != BodyPartDepth.Outside)
             {
-                partCoveredByArmor = true;
-            }
-            else
-            {
-                BodyPartRecord outerPart = part;
-                while (outerPart.parent != null && outerPart.depth != BodyPartDepth.Outside)
-                {
-                    outerPart = outerPart.parent;
-                }
-                partCoveredByArmor = outerPart != part && outerPart.IsInGroup(DefDatabase<BodyPartGroupDef>.GetNamed("CoveredByNaturalArmor"));
-            }
-            if (partCoveredByArmor)
-            {
-                pawnArmorAmount = pawn.GetStatValue(deflectionStat);
+                outerPart = outerPart.parent;
             }
 
             if (pawnArmorAmount > 0 && ApplyArmor(ref damageAmount, ref pierceAmount, pawnArmorAmount, null, damageDef))
             {
+
                 deflected = true;
                 if (damageAmount < 0.001)
                 {
@@ -274,7 +264,6 @@ namespace Combat_Realism
             float penetrationChance = 1;
             if (damageDefCR != null && damageDefCR.deflectable)
                 penetrationChance = Mathf.Clamp((pierceAmount - armorRating) * 6, 0, 1);
-
             //Shot is deflected
             if (penetrationChance == 0 || Rand.Value > penetrationChance)
             {
@@ -307,7 +296,7 @@ namespace Combat_Realism
                 {
                     absorbedDamage *= 0.5f;
                 }
-                armorThing.TakeDamage(new DamageInfo(damageDef, Mathf.CeilToInt(absorbedDamage), null, null, null));
+                armorThing.TakeDamage(new DamageInfo(damageDef, Mathf.CeilToInt(absorbedDamage), -1, null, null, null));
             }
 
             pierceAmount *= dMult;

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommunityCoreLibrary;
+using Combat_Realism.Detours;
 using RimWorld;
 using Verse;
 
 namespace Combat_Realism
 {
-    [SpecialInjectorSequencer(InjectionSequence.MainLoad, InjectionTiming.SpecialInjectors)]
     public class TabInjector : SpecialInjector
     {
         #region Methods
@@ -15,7 +14,7 @@ namespace Combat_Realism
         {
             // get reference to lists of itabs
             List<Type> itabs = ThingDefOf.Human.inspectorTabs;
-            List<ITab> itabsResolved = ThingDefOf.Human.inspectorTabsResolved;
+            List<InspectTabBase> itabsResolved = ThingDefOf.Human.inspectorTabsResolved;
 
             /*
 
@@ -42,8 +41,8 @@ namespace Combat_Realism
             }
 
             // replace resolved ITab, if needed.
-            ITab oldGearTab = ITabManager.GetSharedInstance(typeof(ITab_Pawn_Gear));
-            ITab newGearTab = ITabManager.GetSharedInstance(typeof(ITab_Inventory));
+            InspectTabBase oldGearTab = InspectTabManager.GetSharedInstance(typeof(ITab_Pawn_Gear));
+            InspectTabBase newGearTab = InspectTabManager.GetSharedInstance(typeof(ITab_Inventory));
             if (!itabsResolved.NullOrEmpty() && itabsResolved.Contains(oldGearTab))
             {
                 int resolvedIndex = itabsResolved.IndexOf(oldGearTab);

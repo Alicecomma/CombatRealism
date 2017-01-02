@@ -13,20 +13,20 @@ namespace Combat_Realism
                 ShooterPawn.skills.Learn(SkillDefOf.Shooting, 100);
             }
         }*/
-        public override ShiftVecReport ShiftVecReportFor(TargetInfo target)
+        public override ShiftVecReport ShiftVecReportFor(LocalTargetInfo target)
         {
             ShiftVecReport report = base.ShiftVecReportFor(target);
-            report.circularMissRadius = GetMissRadiusForDist(report.shotDist);
+            report.circularMissRadius = this.GetMissRadiusForDist(report.shotDist);
 
             // Check for marker
             ArtilleryMarker marker = null;
-            if (currentTarget.HasThing && currentTarget.Thing.HasAttachment(ThingDef.Named(ArtilleryMarker.MarkerDef)))
+            if (this.currentTarget.HasThing && this.currentTarget.Thing.HasAttachment(ThingDef.Named(ArtilleryMarker.MarkerDef)))
             {
-                marker = (ArtilleryMarker)currentTarget.Thing.GetAttachment(ThingDef.Named(ArtilleryMarker.MarkerDef));
+                marker = (ArtilleryMarker)this.currentTarget.Thing.GetAttachment(ThingDef.Named(ArtilleryMarker.MarkerDef));
             }
             else
             {
-                marker = (ArtilleryMarker)currentTarget.Cell.GetFirstThing(ThingDef.Named(ArtilleryMarker.MarkerDef));
+                marker = (ArtilleryMarker)this.currentTarget.Cell.GetFirstThing(caster.Map, ThingDef.Named(ArtilleryMarker.MarkerDef));
             }
             if (marker != null)
             {
@@ -37,9 +37,9 @@ namespace Combat_Realism
 
             }
             // If we don't have a marker check for indirect fire and apply penalty
-            else if (report.shotDist > 107 || !GenSight.LineOfSight(caster.Position, report.target.Cell, true))
+            else if (report.shotDist > 107 || !GenSight.LineOfSight(this.caster.Position, report.target.Cell, caster.Map, true))
             {
-                report.indirectFireShift = verbPropsCR.indirectFirePenalty * report.shotDist;
+                report.indirectFireShift = this.verbPropsCR.indirectFirePenalty * report.shotDist;
                 report.weatherShift = 0f;
                 report.lightingShift = 0f;
             }
@@ -48,18 +48,18 @@ namespace Combat_Realism
 
         private float GetMissRadiusForDist(float targDist)
         {
-            float maxRange = verbProps.range;
-            if (compCharges != null)
+            float maxRange = this.verbProps.range;
+            if (this.compCharges != null)
             {
                 Vector2 bracket;
-                if (compCharges.GetChargeBracket(targDist, out bracket))
+                if (this.compCharges.GetChargeBracket(targDist, out bracket))
                 {
                     maxRange = bracket.y;
                 }
             }
             float rangePercent = targDist / maxRange;
             float missRadiusFactor = rangePercent <= 0.5f ? 1 - rangePercent : 0.5f + ((rangePercent - 0.5f) / 2);
-            return verbProps.forcedMissRadius * missRadiusFactor;
+            return this.verbProps.forcedMissRadius * missRadiusFactor;
         }
 	}
 }

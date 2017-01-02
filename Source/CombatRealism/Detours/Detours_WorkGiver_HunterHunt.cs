@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -12,10 +11,9 @@ namespace Combat_Realism.Detours
 {
     internal static class Detours_WorkGiver_HunterHunt
     {
-           [DetourClassMethod(typeof(WorkGiver_HunterHunt), "HasHuntingWeapon", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static bool HasHuntingWeapon(Pawn p)
         {
-            if (p.equipment.Primary != null)
+            if (p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
             {
                 CompAmmoUser comp = p.equipment.Primary.TryGetComp<CompAmmoUser>();
                 if (comp == null 
@@ -23,14 +21,6 @@ namespace Combat_Realism.Detours
                     || (comp.hasMagazine && comp.curMagCount > 0) 
                     || comp.hasAmmo)
                     return true;
-            }
-            List<Hediff> hediffs = p.health.hediffSet.hediffs;
-            for (int i = 0; i < hediffs.Count; i++)
-            {
-                if (hediffs[i].def.addedPartProps != null && hediffs[i].def.addedPartProps.isGoodWeapon)
-                {
-                    return true;
-                }
             }
             return false;
         }

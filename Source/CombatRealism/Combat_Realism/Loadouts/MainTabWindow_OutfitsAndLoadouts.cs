@@ -220,7 +220,7 @@ namespace Combat_Realism
                     options.Add(new FloatMenuOption(localOut.label, delegate
                     {
                         p.outfits.CurrentOutfit = localOut;
-                    }, MenuOptionPriority.Medium, null, null));
+                    }, MenuOptionPriority.Default, null, null));
                 }
                 Find.WindowStack.Add(new FloatMenu(options, optionalTitle, false));
             }
@@ -272,7 +272,7 @@ namespace Combat_Realism
                     list.Add(new FloatMenuOption(current.label, delegate
                     {
                         p.drugs.CurrentPolicy = localAssignedDrugs;
-                    }, MenuOptionPriority.Medium, null, null, 0f, null));
+                    }, MenuOptionPriority.Default, null, null, 0f, null));
                 }
                 Find.WindowStack.Add(new FloatMenu(list));
                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(ConceptDefOf.DrugPolicies, KnowledgeAmount.Total);
@@ -300,7 +300,7 @@ namespace Combat_Realism
                     options.Add(new FloatMenuOption(localLoadout.LabelCap, delegate
                     {
                         p.SetLoadout(localLoadout);
-                    }, MenuOptionPriority.Medium, null, null));
+                    }, MenuOptionPriority.Default, null, null));
                 }
                 Find.WindowStack.Add(new FloatMenu(options, optionalTitle, false));
             }

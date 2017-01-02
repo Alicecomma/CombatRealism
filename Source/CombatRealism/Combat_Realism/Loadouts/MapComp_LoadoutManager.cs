@@ -11,7 +11,6 @@ namespace Combat_Realism
     public class LoadoutManager : MapComponent
     {
         #region Fields
-
         private static LoadoutManager _instance;
         private Dictionary<Pawn, Loadout> _assignedLoadouts = new Dictionary<Pawn, Loadout>();
         private List<LoadoutAssignment> _assignedLoadoutsScribeHelper = new List<LoadoutAssignment>();
@@ -21,7 +20,7 @@ namespace Combat_Realism
 
         #region Constructors
 
-        public LoadoutManager()
+        public LoadoutManager(Map map) : base(map)
         {
             // create a default empty loadout
             // there needs to be at least one default tagged loadout at all times
@@ -36,8 +35,9 @@ namespace Combat_Realism
         {
             get
             {
+                Map map = Find.VisibleMap;
                 if ( _instance == null )
-                    _instance = new LoadoutManager();
+                    _instance = new LoadoutManager(map);
                 return _instance;
             }
         }

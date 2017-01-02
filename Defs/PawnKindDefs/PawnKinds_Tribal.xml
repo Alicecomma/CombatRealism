@@ -1,49 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <PawnKindDefs>
 
-	<PawnKindDef Name="TribalWarrior">
-		<defName>TribalWarrior</defName>
-		<label>warrior</label>
-		<race>Human</race>
+  <PawnKindDef Name="TribalBase" Abstract="True">
+    <race>Human</race>
+    <defaultFactionType>Tribe</defaultFactionType>
+    <backstoryCategory>Tribal</backstoryCategory>
+    <baseRecruitDifficulty>0.65</baseRecruitDifficulty>
+    <chemicalAddictionChance>0.05</chemicalAddictionChance>
+    <invNutrition>2.55</invNutrition>
+    <invFoodDef>Pemmican</invFoodDef>
+  </PawnKindDef>
+
+  <PawnKindDef Name="TribalWarrior" ParentName="TribalBase">
+    <defName>TribalWarrior</defName>
+    <label>warrior</label>
     <combatPower>38</combatPower>
-    <defaultFactionType>Tribe</defaultFactionType>
-		<baseRecruitDifficulty>0.90</baseRecruitDifficulty>
-		<backstoryCategory>Tribal</backstoryCategory>
-    <invNutrition>1.5</invNutrition>
-    <invFoodDef>Pemmican</invFoodDef>
-    <backstoryCryptosleepCommonality>0.01</backstoryCryptosleepCommonality>
-    <maxGenerationAge>40</maxGenerationAge>
-    <gearHealthRange>
-      <min>0.5</min>
-      <max>1.8</max>
-    </gearHealthRange>
-    <apparelMoney>
-      <min>180</min>
-      <max>350</max>
-    </apparelMoney>
-    <apparelTags>
-      <li>Tribal</li>
-    </apparelTags>
-		<weaponMoney>
-			<min>90</min>
-			<max>400</max>
-		</weaponMoney>
-		<weaponTags>
-			<li>NeolithicMelee</li>
-		</weaponTags>
-	</PawnKindDef>
-
-
-	<PawnKindDef Name="TribalArcherBase" Abstract="true">
-		<label>archer</label>
-		<race>Human</race>
-    <combatPower>48</combatPower>
-    <defaultFactionType>Tribe</defaultFactionType>
-		<baseRecruitDifficulty>0.90</baseRecruitDifficulty>
-		<backstoryCategory>Tribal</backstoryCategory>
-    <invNutrition>1.5</invNutrition>
-    <invFoodDef>Pemmican</invFoodDef>
-    <backstoryCryptosleepCommonality>0.01</backstoryCryptosleepCommonality>
     <maxGenerationAge>40</maxGenerationAge>
     <gearHealthRange>
       <min>0.5</min>
@@ -57,48 +28,55 @@
       <li>Tribal</li>
     </apparelTags>
     <weaponMoney>
-			<min>400</min>
-			<max>400</max>
-		</weaponMoney>
-	</PawnKindDef>
+      <min>90</min>
+      <max>400</max>
+    </weaponMoney>
+    <weaponTags>
+      <li>NeolithicMelee</li>
+    </weaponTags>
+  </PawnKindDef>
 
+  <PawnKindDef ParentName="TribalWarrior">
+    <defName>TribalTrader</defName>
+    <label>trader</label>
+    <trader>true</trader>
+  </PawnKindDef>
 
-	<PawnKindDef ParentName="TribalArcherBase">
-		<defName>TribalArcher</defName>
-		<weaponTags>
-			<li>CR_Bow</li>
-		</weaponTags>
-		<fixedInventory>
-			<LoadoutGen_TribalSidearm>1</LoadoutGen_TribalSidearm>
-			<LoadoutGen_TribalAmmo>1</LoadoutGen_TribalAmmo>
-		</fixedInventory>
-	</PawnKindDef>
+  <PawnKindDef ParentName="TribalBase">
+    <defName>TribalArcher</defName>
+    <label>archer</label>
+    <combatPower>48</combatPower>
+    <maxGenerationAge>40</maxGenerationAge>
+    <gearHealthRange>
+      <min>0.5</min>
+      <max>1.8</max>
+    </gearHealthRange>
+    <apparelMoney>
+      <min>180</min>
+      <max>350</max>
+    </apparelMoney>
+    <apparelTags>
+      <li>Tribal</li>
+    </apparelTags>
+    <weaponMoney>
+      <min>400</min>
+      <max>400</max>
+    </weaponMoney>
+    <weaponTags>
+      <li>CR_Bow</li>
+    </weaponTags>
+    <fixedInventory>
+      <LoadoutGen_TribalSidearm>1</LoadoutGen_TribalSidearm>
+      <LoadoutGen_TribalAmmo>1</LoadoutGen_TribalAmmo>
+    </fixedInventory>
+  </PawnKindDef>
 
-
-	<PawnKindDef ParentName="TribalArcherBase">
-		<defName>TribalArcherPila</defName>
-		<weaponTags>
-			<li>CR_Pila</li>
-		</weaponTags>
-		<fixedInventory>
-			<LoadoutGen_TribalSidearm>1</LoadoutGen_TribalSidearm>
-			<LoadoutGen_TribalPila>1</LoadoutGen_TribalPila>
-		</fixedInventory>
-	</PawnKindDef>
-
-
-	<PawnKindDef>
-		<defName>TribalChief</defName>
-		<label>chief</label>
-		<race>Human</race>
+  <PawnKindDef ParentName="TribalBase">
+    <defName>TribalChief</defName>
+    <label>chief</label>
     <combatPower>70</combatPower>
-    <defaultFactionType>Tribe</defaultFactionType>
-		<baseRecruitDifficulty>0.95</baseRecruitDifficulty>
-		<backstoryCategory>Tribal</backstoryCategory>
-    <invNutrition>1.5</invNutrition>
-    <invFoodDef>Pemmican</invFoodDef>
+    <baseRecruitDifficulty>0.90</baseRecruitDifficulty>
     <itemQuality>Superior</itemQuality>
-    <backstoryCryptosleepCommonality>0.01</backstoryCryptosleepCommonality>
     <minGenerationAge>35</minGenerationAge>
     <factionLeader>true</factionLeader>
     <gearHealthRange>
@@ -113,23 +91,17 @@
       <li>Tribal</li>
     </apparelTags>
     <weaponMoney>
-			<min>800</min>
-			<max>1000</max>
-		</weaponMoney>
-		<weaponTags>
-			<li>NeolithicRanged</li>
-		</weaponTags>
-		<fixedInventory>
-			<LoadoutGen_TribalAmmo>1</LoadoutGen_TribalAmmo>
-			<LoadoutGen_TribalSidearm>1</LoadoutGen_TribalSidearm>
-			<LoadoutGen_TribalPila>1</LoadoutGen_TribalPila>
-		</fixedInventory>
-	</PawnKindDef>
-  
-  <PawnKindDef ParentName="TribalWarrior">
-    <defName>TribalTrader</defName>
-    <label>trader</label>
-    <trader>true</trader>
+      <min>800</min>
+      <max>1000</max>
+    </weaponMoney>
+    <weaponTags>
+      <li>NeolithicRanged</li>
+    </weaponTags>
+    <fixedInventory>
+      <LoadoutGen_TribalAmmo>1</LoadoutGen_TribalAmmo>
+      <LoadoutGen_TribalSidearm>1</LoadoutGen_TribalSidearm>
+      <LoadoutGen_TribalPila>1</LoadoutGen_TribalPila>
+    </fixedInventory>
   </PawnKindDef>
 
 </PawnKindDefs>

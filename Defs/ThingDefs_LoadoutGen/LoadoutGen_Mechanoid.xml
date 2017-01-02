@@ -11,7 +11,7 @@
 	<menuHidden>true</menuHidden>
     <useHitPoints>false</useHitPoints>
     <statBases>
-      <Weight>0</Weight>
+      <Mass>0</Mass>
       <Bulk>0</Bulk>
     </statBases>
     <graphicData>

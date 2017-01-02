@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -21,10 +20,11 @@ namespace Combat_Realism
 
         // --------------- Global constants ---------------
 
-        public const float minSuppressionDist = 15f;        //Minimum distance to be suppressed from, so melee won't be suppressed if it closes within this distance
-        private const float maxSuppression = 200f;          //Cap to prevent suppression from building indefinitely
-        private const float suppressionDecayRate = 15f;    //How much suppression decays per second
-        private const int ticksPerMote = 150;               //How many ticks between throwing a mote
+        public const float minSuppressionDist = 10f;        //Minimum distance to be suppressed from, so melee won't be suppressed if it closes within this distance
+        private const float maxSuppression = 100f;          //Cap to prevent suppression from building indefinitely
+        private const float suppressionDecayRate = 7.5f;    //How much suppression decays per second
+        private int ticksPerMote = 200;               //How many ticks between throwing a mote
+        public static readonly String[] robotBodyList = { "AIRobot", "HumanoidTerminator" };
 
         // --------------- Location calculations ---------------
 
@@ -92,7 +92,7 @@ namespace Combat_Realism
                     //Get morale
                     float hardBreakThreshold = pawn.GetStatValue(StatDefOf.MentalBreakThreshold) + 0.15f;
                     float currentMood = pawn.needs != null && pawn.needs.mood != null ? pawn.needs.mood.CurLevel : 0.5f;
-                    threshold = Mathf.Max(0, (currentMood - hardBreakThreshold));
+                    threshold = Mathf.Max(0, currentMood - hardBreakThreshold);
                 }
                 else
                 {
@@ -114,10 +114,10 @@ namespace Combat_Realism
                         return true;
                     }
                     // Removing suppression log
-                            else
-                            {
-                                Log.Warning("Hunkering without suppression, this should never happen");
-                            } 
+                    else
+                    {
+                        Log.Warning("Hunkering without suppression, this should never happen");
+                    }
                 }
                 return false;
             }
@@ -153,9 +153,6 @@ namespace Combat_Realism
             }
 
             //Assign suppressed status and interrupt activity if necessary
-            /*
-             * Disabled because suppression works counter-intuitively
-            */
 
             if (!isSuppressed && currentSuppressionInt > suppressionThreshold)
             {
@@ -163,9 +160,18 @@ namespace Combat_Realism
                 Pawn pawn = parent as Pawn;
                 if (pawn != null)
                 {
-                    if (pawn.jobs != null)
+                    if (pawn.MentalStateDef != null && (pawn.MentalState.def != MentalStateDefOf.Berserk || pawn.MentalState.def != MentalStateDefOf.PanicFlee))
                     {
-                        pawn.jobs.StopAll(false);
+                        if (pawn.jobs != null &&
+                            (pawn.CurJob.def != CR_JobDefOf.HunkerDown || pawn.CurJob.def != CR_JobDefOf.RunForCover))
+                        {
+                            pawn.jobs.StopAll(false);
+                        }
+                    }
+                    else 
+                    {
+                        currentSuppressionInt = 0f;
+                        isSuppressed = false;
                     }
                 }
                 else
@@ -183,7 +189,7 @@ namespace Combat_Realism
             base.CompTick();
 
             //Apply decay once per second
-            if (Gen.IsHashIntervalTick(parent, 60))
+            if (parent.IsHashIntervalTick(60))
             {
                 //Decay global suppression
                 if (currentSuppressionInt > suppressionDecayRate)
@@ -212,13 +218,22 @@ namespace Combat_Realism
                     locSuppressionAmount = 0;
                 }
             }
+
             //Throw mote at set interval
-            if (Gen.IsHashIntervalTick(parent, ticksPerMote))
+            if (Gen.IsHashIntervalTick(parent, ticksPerMote + Rand.Range(30, 300))
+                && parent.def.race.Humanlike && !robotBodyList.Contains(parent.def.race.body.defName))
             {
-                if (isSuppressed)
+                if (isHunkering || isSuppressed)
                 {
-                    MoteMaker.ThrowText(parent.Position.ToVector3Shifted(), "CR_SuppressedMote".Translate());
+                    AGAIN: string rndswearsuppressed = RulePackDef.Named("SuppressedMote").Rules.RandomElement().Generate();
+
+                    if (rndswearsuppressed == "[suppressed]" || rndswearsuppressed == "" || rndswearsuppressed == " ")
+                    {
+                        goto AGAIN;
+                    }
+                    MoteMaker.ThrowText(this.parent.Position.ToVector3Shifted(), Find.VisibleMap, rndswearsuppressed);
                 }
+                //standard    MoteMaker.ThrowText(parent.Position.ToVector3Shifted(), "CR_SuppressedMote".Translate());
             }
         }
     }

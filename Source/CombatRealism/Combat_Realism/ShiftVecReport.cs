@@ -10,7 +10,7 @@ namespace Combat_Realism
 {
     public class ShiftVecReport
     {
-        public TargetInfo target = null;
+        public LocalTargetInfo target = null;
         public Pawn targetPawn
         {
             get

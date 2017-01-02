@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -12,7 +11,6 @@ namespace Combat_Realism.Detours
 {
     internal static class Detours_Pawn_ApparelTracker
     {
-        //   [DetourClassMethod(typeof(Pawn_ApparelTracker), "TryDrop", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static bool TryDrop(this Pawn_ApparelTracker _this, Apparel ap, out Apparel resultingAp, IntVec3 pos, bool forbid = true)
         {
             if (!_this.WornApparel.Contains(ap))
@@ -21,21 +19,22 @@ namespace Combat_Realism.Detours
                 resultingAp = null;
                 return false;
             }
-            _this.WornApparel.Remove(ap);
-            ap.wearer = null;
-            Thing thing = null;
-            bool flag = GenThing.TryDropAndSetForbidden(ap, pos, ThingPlaceMode.Near, out thing, forbid);
-            resultingAp = (thing as Apparel);
-            _this.ApparelChanged();
-            if (flag && _this.pawn.outfits != null)
+            if (_this.pawn.MapHeld == null)
             {
-                _this.pawn.outfits.forcedHandler.SetForced(ap, false);
+                Log.Warning(_this.pawn.LabelCap + " tried to drop apparel but his MapHeld is null.");
+                resultingAp = null;
+                return false;
             }
+            ap.Notify_Stripped(_this.pawn);
+            _this.Remove(ap);
+            Thing thing = null;
+
+            bool result = GenThing.TryDropAndSetForbidden(ap, pos, _this.pawn.MapHeld, ThingPlaceMode.Near, out thing, forbid);
+            resultingAp = (thing as Apparel);
             CR_Utility.TryUpdateInventory(_this.pawn);     // Apparel was dropped, update inventory
-            return flag;
+            return result;
         }
 
-        [DetourClassMethod(typeof(Pawn_ApparelTracker), "Wear", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static void Wear(this Pawn_ApparelTracker _this, Apparel newApparel, bool dropReplacedApparel = true)
         {
             SlotGroupUtility.Notify_TakingThing(newApparel);
@@ -71,15 +70,28 @@ namespace Combat_Realism.Detours
                     }
                     else
                     {
-                        _this.WornApparel.Remove(apparel);
+                        _this.Remove(apparel);
                     }
                 }
+            }
+            if (newApparel.wearer != null)
+            {
+                Log.Warning(string.Concat(new object[]
+                {
+                    _this.pawn,
+                    " is trying to wear ",
+                    newApparel,
+                    " but this apparel already has a wearer (",
+                    newApparel.wearer,
+                    "). This may or may not cause bugs."
+                }));
             }
             _this.WornApparel.Add(newApparel);
             newApparel.wearer = _this.pawn;
             _this.SortWornApparelIntoDrawOrder();
             _this.ApparelChanged();
 
+            //CR PART
             CR_Utility.TryUpdateInventory(_this.pawn);     // Apparel was added, update inventory
             MethodInfo methodInfo = typeof(Pawn_ApparelTracker).GetMethod("SortWornApparelIntoDrawOrder", BindingFlags.Instance | BindingFlags.NonPublic);
             methodInfo.Invoke(_this, new object[] { });
@@ -87,15 +99,9 @@ namespace Combat_Realism.Detours
             LongEventHandler.ExecuteWhenFinished(new Action(_this.ApparelChanged));
         }
 
-        [DetourClassMethod(typeof(Pawn_ApparelTracker), "Notify_WornApparelDestroyed", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static void Notify_WornApparelDestroyed(this Pawn_ApparelTracker _this, Apparel apparel)
         {
-            _this.WornApparel.Remove(apparel);
-            LongEventHandler.ExecuteWhenFinished(new Action(_this.ApparelChanged));
-            if (_this.pawn.outfits != null && _this.pawn.outfits.forcedHandler != null)
-            {
-                _this.pawn.outfits.forcedHandler.Notify_Destroyed(apparel);
-            }
+            _this.Remove(apparel);
             CR_Utility.TryUpdateInventory(_this.pawn);     // Apparel was destroyed, update inventory
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using CommunityCoreLibrary;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -15,49 +14,50 @@ namespace Combat_Realism.Detours
         private static readonly FieldInfo innerListFieldInfo = typeof(ThingContainer).GetField("innerList", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo maxStacksFieldInfo = typeof(ThingContainer).GetField("maxStacks", BindingFlags.Instance | BindingFlags.NonPublic);
 
-    //    [DetourClassMethod(typeof(ThingContainer), "TryAdd", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
-        internal static bool TryAdd(this ThingContainer _this, Thing item)
+        internal static bool TryAdd(this ThingContainer _this, Thing item, bool canMergeWithExistingStacks = true)
         {
+            if (item == null)
+            {
+                Log.Warning("Tried to add null item to ThingContainer.");
+                return false;
+            }
+            if (_this.Contains(item))
+            {
+                Log.Warning("Tried to add " + item + " to ThingContainer but this item is already here.");
+                return false;
+            }
+
             if (item.stackCount > _this.AvailableStackSpace)
             {
-                Log.Error(string.Concat(new object[]
-                {
-                    "Add item with stackCount=",
-                    item.stackCount,
-                    " with only ",
-                    _this.AvailableStackSpace,
-                    " in container. Splitting and adding..."
-                }));
-                return _this.TryAdd(item, _this.AvailableStackSpace);
+                return _this.TryAdd(item, _this.AvailableStackSpace) > 0;
             }
 
             List<Thing> innerList = (List<Thing>)innerListFieldInfo.GetValue(_this);    // Fetch innerList through reflection
 
             SlotGroupUtility.Notify_TakingThing(item);
-            if (item.def.stackLimit > 1)
-            {
-                for (int i = 0; i < innerList.Count; i++)
-                {
-                    if (innerList[i].def == item.def)
-                    {
-                        int num = item.stackCount;
-                        if (num > _this.AvailableStackSpace)
-                        {
-                            num = _this.AvailableStackSpace;
-                        }
-                        Thing other = item.SplitOff(num);
-                        if (!innerList[i].TryAbsorbStack(other, false))
-                        {
-                            Log.Error("ThingContainer did TryAbsorbStack " + item + " but could not absorb stack.");
-                        }
-                    }
-                    if (item.Destroyed)
-                    {
-                        CR_Utility.TryUpdateInventory(_this.owner as Pawn_InventoryTracker);   // Item has been added, notify CompInventory
-                        return true;
-                    }
-                }
-            }
+			if (canMergeWithExistingStacks && item.def.stackLimit > 1)
+			{
+				for (int i = 0; i < innerList.Count; i++)
+				{
+					if (innerList[i].def == item.def)
+					{
+						int num = item.stackCount;
+						if (num > _this.AvailableStackSpace)
+						{
+							num = _this.AvailableStackSpace;
+						}
+						Thing other = item.SplitOff(num);
+						if (!innerList[i].TryAbsorbStack(other, false))
+						{
+							Log.Error("ThingContainer did TryAbsorbStack " + item + " but could not absorb stack.");
+						}
+					}
+					if (item.Destroyed)
+					{
+						return true;
+					}
+				}
+			}
 
             int maxStacks = (int)maxStacksFieldInfo.GetValue(_this);    // Fetch maxStacks through reflection
 
@@ -73,7 +73,7 @@ namespace Combat_Realism.Detours
             {
                 item.GetAttachment(ThingDefOf.Fire).Destroy(DestroyMode.Vanish);
             }
-            item.holder = _this;
+            item.holdingContainer = _this;
             innerList.Add(item);
 
             CR_Utility.TryUpdateInventory(_this.owner as Pawn_InventoryTracker);   // Item has been added, notify CompInventory
@@ -81,8 +81,7 @@ namespace Combat_Realism.Detours
             return true;
         }
 
-        //   [DetourClassMethod(typeof(ThingContainer), "TryDrop", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
-        internal static bool TryDrop(this ThingContainer _this, Thing thing, IntVec3 dropLoc, ThingPlaceMode mode, int count, out Thing resultingThing, Action<Thing, int> placedAction = null)
+        internal static bool TryDrop(this ThingContainer _this, Thing thing, IntVec3 dropLoc, Map map, ThingPlaceMode mode, int count, out Thing resultingThing, Action<Thing, int> placedAction = null)
         {
             if (thing.stackCount < count)
             {
@@ -99,7 +98,7 @@ namespace Combat_Realism.Detours
             }
             if (count == thing.stackCount)
             {
-                if (GenDrop.TryDropSpawn(thing, dropLoc, mode, out resultingThing, placedAction))
+                if (GenDrop.TryDropSpawn(thing, dropLoc, map , mode, out resultingThing, placedAction))
                 {
                     _this.Remove(thing);
                     //Utility.TryUpdateInventory(_this.owner as Pawn_InventoryTracker);   // Thing dropped, update inventory
@@ -110,7 +109,7 @@ namespace Combat_Realism.Detours
             else
             {
                 Thing thing2 = thing.SplitOff(count);
-                if (GenDrop.TryDropSpawn(thing2, dropLoc, mode, out resultingThing, placedAction))
+                if (GenDrop.TryDropSpawn(thing2, dropLoc, map, mode, out resultingThing, placedAction))
                 {
                     CR_Utility.TryUpdateInventory(_this.owner as Pawn_InventoryTracker);   // Thing dropped, update inventory
                     return true;
@@ -120,7 +119,6 @@ namespace Combat_Realism.Detours
             }
         }
 
-        [DetourClassMethod(typeof(ThingContainer), "Get", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static Thing Get(this ThingContainer _this, Thing thing, int count)
         {
             if (count > thing.stackCount)
@@ -142,20 +140,28 @@ namespace Combat_Realism.Detours
                 return thing;
             }
             Thing thing2 = thing.SplitOff(count);
-            thing2.holder = null;
+            thing2.holdingContainer = null;
             CR_Utility.TryUpdateInventory(_this.owner as Pawn_InventoryTracker);   // Item was taken from inventory, update
             return thing2;
         }
 
-        [DetourClassMethod(typeof(ThingContainer), "Remove", InjectionSequence.DLLLoad, InjectionTiming.Priority_23)]
         internal static void Remove(this ThingContainer _this, Thing item)
         {
-            if (item.holder == _this)
+            if (!_this.Contains(item))
             {
-                item.holder = null;
+                return;
+            }
+            if (item.holdingContainer == _this)
+            {
+                item.holdingContainer = null;
             }
             List<Thing> innerList = (List<Thing>)innerListFieldInfo.GetValue(_this);    // Fetch innerList through reflection
             innerList.Remove(item);
+            Pawn_InventoryTracker pawn_InventoryTracker = _this.owner as Pawn_InventoryTracker;
+            if (pawn_InventoryTracker != null)
+            {
+                pawn_InventoryTracker.Notify_ItemRemoved(item);
+            }
             CR_Utility.TryUpdateInventory(_this.owner as Pawn_InventoryTracker);           // Item was removed, update inventory
         }
     }

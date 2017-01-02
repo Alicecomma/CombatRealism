@@ -10,34 +10,34 @@ namespace Combat_Realism
 		{
 			if (base.TryCastShot())
 			{
-				if (burstShotsLeft <= 1)
+				if (this.burstShotsLeft <= 1)
 				{
-					SelfConsume();
+					this.SelfConsume();
 				}
 				return true;
 			}
             if (compAmmo != null && compAmmo.hasMagazine && compAmmo.curMagCount <= 0)
             {
-                SelfConsume();
+                this.SelfConsume();
             }
-			else if (burstShotsLeft < verbProps.burstShotCount)
+			else if (this.burstShotsLeft < this.verbProps.burstShotCount)
 			{
-				SelfConsume();
+				this.SelfConsume();
 			}
 			return false;
 		}
-		public override void Notify_Dropped()
+        public override void Notify_EquipmentLost()
 		{
-			if (state == VerbState.Bursting && burstShotsLeft < verbProps.burstShotCount)
+			if (this.state == VerbState.Bursting && this.burstShotsLeft < this.verbProps.burstShotCount)
 			{
-				SelfConsume();
+				this.SelfConsume();
 			}
 		}
 		private void SelfConsume()
 		{
-			if (ownerEquipment != null && !ownerEquipment.Destroyed)
+			if (this.ownerEquipment != null && !this.ownerEquipment.Destroyed)
             {
-                ownerEquipment.Destroy(DestroyMode.Vanish);
+                this.ownerEquipment.Destroy(DestroyMode.Vanish);
 			}
 		}
 	}

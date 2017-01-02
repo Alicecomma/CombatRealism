@@ -48,8 +48,8 @@ namespace Combat_Realism
                 int maxCountTemp;
                 if (compInvInt.CanFitInInventory(thing, out maxCountTemp))
                 {
-                    IntVec3 spawnPos = inventory.parent.Position.InBounds() ? inventory.parent.Position : IntVec3.Zero;
-                    GenSpawn.Spawn(thing, spawnPos);
+                    IntVec3 spawnPos = inventory.parent.Position.InBounds(Find.VisibleMap) ? inventory.parent.Position : IntVec3.Zero;
+                    GenSpawn.Spawn(thing, spawnPos, Find.VisibleMap);
 
                     // If we cant fit the whole stack, fit as much as we can and return
                     if (maxCountTemp < thing.stackCount)

@@ -53,7 +53,7 @@ namespace Combat_Realism
 
 		public void TurretTopTick()
 		{
-			TargetInfo currentTarget = parentTurret.CurrentTarget;
+			LocalTargetInfo currentTarget = parentTurret.CurrentTarget;
 			if (currentTarget.IsValid)
 			{
 				float curRotation = (currentTarget.Cell.ToVector3Shifted() - parentTurret.DrawPos).AngleFlat();

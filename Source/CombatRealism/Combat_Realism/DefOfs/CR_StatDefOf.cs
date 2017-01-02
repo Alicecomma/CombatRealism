@@ -11,7 +11,7 @@ namespace Combat_Realism
     public static class CR_StatDefOf
     {
         public static readonly StatDef Bulk = StatDef.Named("Bulk"); // for items in inventory
-        public static readonly StatDef Weight = StatDef.Named("Weight"); // items in inventory
+      //  public static readonly StatDef Mass = StatDef.Named("Mass"); // items in inventory
         public static readonly StatDef WornBulk = StatDef.Named("WornBulk"); // apparel offsets
         public static readonly StatDef WornWeight = StatDef.Named("WornWeight"); // apparel offsets
         public static readonly StatDef CarryBulk = StatDef.Named("CarryBulk"); // pawn capacity

@@ -27,26 +27,28 @@ namespace Combat_Realism
         /// Additionally handles fragmentation effects if defined.
         /// </summary>
         /// <param name="instigator">Launcher of the projectile calling the method</param>
-		public virtual void Explode(Thing instigator, IntVec3 pos)
+		public virtual void Explode(Thing instigator, IntVec3 pos, Map map)
         {
             // Regular explosion stuff
             if (Props.explosionRadius > 0 && Props.explosionDamage > 0)
             {
-                Explosion explosion = new Explosion();
-                explosion.position = pos;
-                explosion.radius = Props.explosionRadius;
-                explosion.damType = Props.explosionDamageDef;
-                explosion.instigator = instigator;
-                explosion.damAmount = GenMath.RoundRandom(Props.explosionDamage);
-                explosion.source = parent.def;
-                explosion.preExplosionSpawnThingDef = Props.preExplosionSpawnThingDef;
-                explosion.preExplosionSpawnChance = Props.explosionSpawnChance;
-                explosion.postExplosionSpawnThingDef = Props.postExplosionSpawnThingDef;
-                explosion.postExplosionSpawnChance = Props.explosionSpawnChance;
-                explosion.applyDamageToExplosionCellsNeighbors = Props.damageAdjacentTiles;
-                Find.Map.GetComponent<ExplosionManager>().StartExplosion(explosion, Props.soundExplode == null ? Props.explosionDamageDef.soundExplosion : Props.soundExplode);
+                GenExplosion.DoExplosion
+                    (pos,
+                    map,
+                    Props.explosionRadius,
+                    Props.explosionDamageDef,
+                    instigator,
+                    Props.soundExplode == null ? Props.explosionDamageDef.soundExplosion : Props.soundExplode,
+                    parent.def, 
+                    null,
+                    Props.postExplosionSpawnThingDef,
+                    Props.explosionSpawnChance, 
+                    1, 
+                    Props.applyDamageToExplosionCellsNeighbors, 
+                    Props.preExplosionSpawnThingDef, 
+                    Props.explosionSpawnChance,
+                    1);
             }
-
             // Fragmentation stuff
             if (!Props.fragments.NullOrEmpty())
             {
@@ -60,16 +62,15 @@ namespace Combat_Realism
                     Vector3 exactOrigin = new Vector3(0, 0, 0);
                     exactOrigin.x = parent.DrawPos.x;
                     exactOrigin.z = parent.DrawPos.z;
-
-                    foreach (ThingCount fragment in Props.fragments)
+                    foreach (ThingCountClass fragment in Props.fragments)
                     {
                         for (int i = 0; i < fragment.count; i++)
                         {
                             ProjectileCR projectile = (ProjectileCR)ThingMaker.MakeThing(fragment.thingDef, null);
                             projectile.canFreeIntercept = true;
                             Vector3 exactTarget = exactOrigin + (new Vector3(1, 0, 1) * UnityEngine.Random.Range(0, Props.fragRange)).RotatedBy(UnityEngine.Random.Range(0, 360));
-                            TargetInfo targetCell = exactTarget.ToIntVec3();
-                            GenSpawn.Spawn(projectile, parent.Position);
+                            LocalTargetInfo targetCell = exactTarget.ToIntVec3();
+                            GenSpawn.Spawn(projectile, parent.Position, map);
                             projectile.Launch(instigator, exactOrigin, targetCell, exactTarget, null);
                         }
                     }

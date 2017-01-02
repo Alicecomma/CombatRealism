@@ -6,7 +6,7 @@
   <ThingDef Class="Combat_Realism.AmmoDef" Name="410BoreBase" ParentName="SmallAmmoBase" Abstract="True">
     <description>Low caliber shotgun shell. Its small diameter allows it to be fired from many of the same firearms as the .45 Colt cartridge.</description>
     <statBases>
-	  <Weight>0.06</Weight>
+	  <Mass>0.06</Mass>
 	  <Bulk>0.11</Bulk>
     </statBases>
 	<tradeTags>
@@ -38,7 +38,7 @@
   <ThingDef Class="Combat_Realism.AmmoDef" Name="12GaugeBase" ParentName="SmallAmmoBase" Abstract="True">
     <description>Extremely common shotgun caliber used in almost every application, from hunting over riot control to military firearms.</description>
     <statBases>
-	  <Weight>0.08</Weight>
+	  <Mass>0.08</Mass>
 	  <Bulk>0.15</Bulk>
     </statBases>
 	<tradeTags>
@@ -87,7 +87,7 @@
       <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
-	  <Weight>0.1</Weight>
+	  <Mass>0.1</Mass>
       <MarketValue>0.30</MarketValue>
     </statBases>
 	<linkedProjectile>Bullet_12Gauge_Slug</linkedProjectile>

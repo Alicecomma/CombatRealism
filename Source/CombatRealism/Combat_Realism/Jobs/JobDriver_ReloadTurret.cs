@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RimWorld;
-using Verse;
-using Verse.AI;
 using UnityEngine;
+using Verse.AI;
 
 namespace Combat_Realism
 {
@@ -50,11 +48,11 @@ namespace Combat_Realism
 
             // Wait in place
             Toil waitToil = new Toil();
-            waitToil.initAction = new Action(delegate
+            waitToil.initAction = delegate
             {
                 waitToil.actor.pather.StopDead();
                 compReloader.TryStartReload();
-            });
+            };
             waitToil.defaultCompleteMode = ToilCompleteMode.Delay;
             waitToil.defaultDuration = Mathf.CeilToInt(compReloader.Props.reloadTicks / pawn.GetStatValue(CR_StatDefOf.ReloadSpeed));
             yield return waitToil.WithProgressBarToilDelay(TargetIndex.A);
@@ -62,14 +60,14 @@ namespace Combat_Realism
             //Actual reloader
             Toil reloadToil = new Toil();
             reloadToil.defaultCompleteMode = ToilCompleteMode.Instant;
-            reloadToil.initAction = new Action(delegate
+            reloadToil.initAction = delegate
             {
                 Building_TurretGunCR turret = TargetThingA as Building_TurretGunCR;
                 if (compReloader != null && turret.compAmmo != null)
                 {
                     compReloader.LoadAmmo(TargetThingB);
                 }
-            });
+            };
             reloadToil.EndOnDespawnedOrNull(TargetIndex.B);
             yield return reloadToil;
         }

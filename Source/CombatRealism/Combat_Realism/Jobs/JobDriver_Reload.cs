@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
-using UnityEngine;
 
 namespace Combat_Realism
 {
@@ -31,7 +31,7 @@ namespace Combat_Realism
         {
             if (compReloader == null)
             {
-                Log.Error(pawn.ToString() + " tried to do reload job without compReloader");
+                Log.Error(pawn + " tried to do reload job without compReloader");
                 yield return null;
             }
 

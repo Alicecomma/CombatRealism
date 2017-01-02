@@ -8,7 +8,7 @@ using Verse;
 
 namespace Combat_Realism
 {
-    public class CompFireModes : CommunityCoreLibrary.CompRangedGizmoGiver
+    public class CompFireModes : CompRangedGizmoGiver
     {
         public CompProperties_FireModes Props
         {
@@ -143,7 +143,7 @@ namespace Combat_Realism
             currentAimModeInt = availableAimModes.ElementAt(0);
         }
 
-        public override IEnumerable<Command> CompGetGizmosExtra()
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             if (casterPawn != null && casterPawn.Faction.Equals(Faction.OfPlayer))
             {

@@ -28,15 +28,15 @@ namespace Combat_Realism
             marker.lightingShift = report.lightingShift;
             marker.weatherShift = report.weatherShift;
 
-            GenSpawn.Spawn(marker, currentTarget.Cell);
+            GenSpawn.Spawn(marker, this.currentTarget.Cell, caster.Map);
 
             // Check for something to attach marker to
-            if (currentTarget.HasThing)
+            if (this.currentTarget.HasThing)
             {
-                CompAttachBase comp = currentTarget.Thing.TryGetComp<CompAttachBase>();
+                CompAttachBase comp = this.currentTarget.Thing.TryGetComp<CompAttachBase>();
                 if (comp != null)
                 {
-                    marker.AttachTo(currentTarget.Thing);
+                    marker.AttachTo(this.currentTarget.Thing);
                 }
             }
             return true;

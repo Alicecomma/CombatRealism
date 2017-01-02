@@ -1,5 +1,4 @@
-﻿using CommunityCoreLibrary;
-using RimWorld;
+﻿using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +69,8 @@ namespace Combat_Realism
         {
             get
             {
-                return _slots.Select(slot => slot.Def.GetStatValueAbstract(CR_StatDefOf.Weight) * slot.Count).Sum();
+                return _slots.Select(slot => slot.Def.GetStatValueAbstract(StatDefOf.Mass) * slot.Count).Sum();
+                //old return _slots.Select(slot => slot.Def.GetStatValueAbstract(CR_StatDefOf.Weight) * slot.Count).Sum();
             }
         }
 

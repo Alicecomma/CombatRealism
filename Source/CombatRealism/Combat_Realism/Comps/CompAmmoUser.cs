@@ -10,12 +10,12 @@ using Verse.Sound;
 
 namespace Combat_Realism
 {
-    public class CompAmmoUser : CommunityCoreLibrary.CompRangedGizmoGiver
+    public class CompAmmoUser : CompRangedGizmoGiver
     {
         #region Fields
 
         private int curMagCountInt;
-        private TargetInfo storedTarget = null;
+        private LocalTargetInfo storedTarget = null;
         private JobDef storedJobDef = null;
         private AmmoDef currentAmmoInt = null;
         public AmmoDef selectedAmmo;
@@ -136,7 +136,7 @@ namespace Combat_Realism
         {
             if (wielder.drafter != null)
             {
-                wielder.drafter.TakeOrderedJob(job);
+                wielder.jobs.TryTakeOrderedJob(job);
             }
             else
             {
@@ -226,7 +226,7 @@ namespace Combat_Realism
                     else
                     {
                         Thing outThing;
-                        GenThing.TryDropAndSetForbidden(ammoThing, position, ThingPlaceMode.Near, out outThing, turret.Faction != Faction.OfPlayer);
+                        GenThing.TryDropAndSetForbidden(ammoThing, position, Find.VisibleMap, ThingPlaceMode.Near, out outThing, turret.Faction != Faction.OfPlayer);
                     }
                 }
                 // Check for ammo
@@ -240,7 +240,7 @@ namespace Combat_Realism
             // Throw mote
             if (Props.throwMote)
             {
-                MoteMaker.ThrowText(position.ToVector3Shifted(), "CR_ReloadingMote".Translate());
+                MoteMaker.ThrowText(position.ToVector3Shifted(), Find.VisibleMap, "CR_ReloadingMote".Translate());
             }
 
             // Issue reload job
@@ -256,8 +256,8 @@ namespace Combat_Realism
                     && wielder.CurJob != null
                        && (wielder.CurJob.def == JobDefOf.AttackStatic || wielder.CurJob.def == JobDefOf.Goto || wielder.CurJob.def == JobDefOf.Hunt))
                 {
-                    if (wielder.CurJob.targetA.HasThing) storedTarget = new TargetInfo(wielder.CurJob.targetA.Thing);
-                    else storedTarget = new TargetInfo(wielder.CurJob.targetA.Cell);
+                    if (wielder.CurJob.targetA.HasThing) storedTarget = new LocalTargetInfo(wielder.CurJob.targetA.Thing);
+                    else storedTarget = new LocalTargetInfo(wielder.CurJob.targetA.Cell);
                     storedJobDef = wielder.CurJob.def;
                 }
                 else
@@ -293,7 +293,7 @@ namespace Combat_Realism
                     else
                     {
                         Thing outThing;
-                        GenThing.TryDropAndSetForbidden(ammoThing, position, ThingPlaceMode.Near, out outThing, turret.Faction != Faction.OfPlayer);
+                        GenThing.TryDropAndSetForbidden(ammoThing, position, Find.VisibleMap, ThingPlaceMode.Near, out outThing, turret.Faction != Faction.OfPlayer);
                     }
                 }
                 // Check for ammo
@@ -307,7 +307,7 @@ namespace Combat_Realism
             // Throw mote
             if (Props.throwMote)
             {
-                MoteMaker.ThrowText(position.ToVector3Shifted(), "CR_ReloadingMote".Translate());
+                MoteMaker.ThrowText(position.ToVector3Shifted(), Find.VisibleMap, "CR_ReloadingMote".Translate());
             }
 
             // Issue reload job
@@ -328,7 +328,7 @@ namespace Combat_Realism
         {
             if (Props.throwMote)
             {
-                MoteMaker.ThrowText(position.ToVector3Shifted(), "CR_OutOfAmmo".Translate() + "!");
+                MoteMaker.ThrowText(position.ToVector3Shifted(), Find.VisibleMap, "CR_OutOfAmmo".Translate() + "!");
             }
             if (wielder != null && compInventory != null && (wielder.jobs == null || wielder.CurJob.def != JobDefOf.Hunt)) compInventory.SwitchToNextViableWeapon();
         }
@@ -385,8 +385,8 @@ namespace Combat_Realism
             }
             curMagCountInt = newMagCount;
             if (turret != null) turret.isReloading = false;
-            if (parent.def.soundInteract != null) parent.def.soundInteract.PlayOneShot(SoundInfo.InWorld(position));
-            if (Props.throwMote) MoteMaker.ThrowText(position.ToVector3Shifted(), "CR_ReloadedMote".Translate());
+            if (parent.def.soundInteract != null) parent.def.soundInteract.PlayOneShot(new TargetInfo(position,  Find.VisibleMap, false));
+            if (Props.throwMote) MoteMaker.ThrowText(position.ToVector3Shifted(), Find.VisibleMap, "CR_ReloadedMote".Translate());
         }
 
         private bool TryFindAmmoInInventory(out Thing ammoThing)
@@ -430,7 +430,7 @@ namespace Combat_Realism
             }
         }
 
-        public override IEnumerable<Command> CompGetGizmosExtra()
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             GizmoAmmoStatus ammoStatusGizmo = new GizmoAmmoStatus { compAmmo = this };
             yield return ammoStatusGizmo;
@@ -447,7 +447,7 @@ namespace Combat_Realism
                     action = action,
                     defaultLabel = hasMagazine ? "CR_ReloadLabel".Translate() : "",
                     defaultDesc = "CR_ReloadDesc".Translate(),
-                    icon = currentAmmo == null ? ContentFinder<Texture2D>.Get("UI/Buttons/Reload", true) : CommunityCoreLibrary.Def_Extensions.IconTexture(selectedAmmo)
+                    icon = currentAmmo == null ? ContentFinder<Texture2D>.Get("UI/Buttons/Reload", true) : Def_Extensions.IconTexture(selectedAmmo)
                 };
                 yield return reloadCommandGizmo;
             }

@@ -23,7 +23,7 @@ namespace Combat_Realism
         {
             Building_TurretGunCR turret = t as Building_TurretGunCR;
             if (turret == null || !turret.needsReload || !pawn.CanReserveAndReach(turret, PathEndMode.ClosestTouch, Danger.Deadly) || turret.IsForbidden(pawn.Faction)) return false;
-            Thing ammo = GenClosest.ClosestThingReachable(pawn.Position,
+            Thing ammo = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map,
                             ThingRequest.ForDef(turret.compAmmo.selectedAmmo),
                             PathEndMode.ClosestTouch,
                             TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn),
@@ -44,7 +44,7 @@ namespace Combat_Realism
             Building_TurretGunCR turret = t as Building_TurretGunCR;
             if (turret == null) return null;
 
-            Thing ammo = GenClosest.ClosestThingReachable(pawn.Position,
+            Thing ammo = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map,
                             ThingRequest.ForDef(turret.compAmmo.selectedAmmo),
                             PathEndMode.ClosestTouch,
                             TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn),
@@ -54,7 +54,7 @@ namespace Combat_Realism
             if (ammo == null) return null;
             int amountNeeded = turret.compAmmo.Props.magazineSize;
             if (turret.compAmmo.currentAmmo == turret.compAmmo.selectedAmmo) amountNeeded -= turret.compAmmo.curMagCount;
-            return new Job(CR_JobDefOf.ReloadTurret, t, ammo) { maxNumToCarry = Mathf.Min(amountNeeded, ammo.stackCount) };
+            return new Job(DefDatabase<JobDef>.GetNamed("ReloadTurret"), t, ammo) { count = Mathf.Min(amountNeeded, ammo.stackCount) };
         }
 
 

@@ -61,7 +61,7 @@ namespace Combat_Realism
                 Corpse corpse = SelThing as Corpse;
                 if (corpse != null)
                 {
-                    return corpse.innerPawn;
+                    return corpse.InnerPawn;
                 }
                 throw new InvalidOperationException("Gear tab on non-pawn non-corpse " + SelThing);
             }
@@ -134,7 +134,7 @@ namespace Combat_Realism
             {
                 Widgets.ListSeparator(ref num, viewRect.width, "Inventory".Translate());
                 workingInvList.Clear();
-                workingInvList.AddRange(SelPawnForGear.inventory.container);
+                workingInvList.AddRange(SelPawnForGear.inventory.innerContainer);
                 for (int i = 0; i < workingInvList.Count; i++)
                 {
                     DrawThingRow(ref num, viewRect.width, workingInvList[i]);
@@ -213,6 +213,20 @@ namespace Combat_Realism
                 }
                 rect.width -= 24f;
             }
+            if (this.CanControl && thing.def.IsNutritionGivingIngestible && thing.IngestibleNow && base.SelPawn.RaceProps.CanEverEat(thing))
+            {
+                Rect rect3 = new Rect(rect.width - 24f, y, 24f, 24f);
+                TooltipHandler.TipRegion(rect3, "ConsumeThing".Translate(new object[]
+                {
+                    thing.LabelNoCount
+                }));
+                if (Widgets.ButtonImage(rect3, TexButton.Ingest))
+                {
+                    SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                    this.InterfaceEatThis(thing);
+                }
+                rect.width -= 24f;
+            }
             if (Mouse.IsOver(rect))
             {
                 GUI.color = _highlightColor;
@@ -242,7 +256,7 @@ namespace Combat_Realism
                 floatOptionList.Add(new FloatMenuOption("ThingInfo".Translate(), delegate
                 {
                     Find.WindowStack.Add(new Dialog_InfoCard(thing));
-                }, MenuOptionPriority.Medium, null, null));
+                }, MenuOptionPriority.Default, null, null));
                 if (CanControl)
                 {
                     // Equip option
@@ -260,7 +274,7 @@ namespace Combat_Realism
                                     new Action(delegate
                                     {
                                         ThingWithComps oldEq;
-                                        SelPawnForGear.equipment.TryTransferEquipmentToContainer(SelPawnForGear.equipment.Primary, SelPawnForGear.inventory.container, out oldEq);
+                                        SelPawnForGear.equipment.TryTransferEquipmentToContainer(SelPawnForGear.equipment.Primary, SelPawnForGear.inventory.innerContainer, out oldEq);
                                     }));
                             }
                             else if (!SelPawnForGear.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
@@ -295,8 +309,14 @@ namespace Combat_Realism
                         SoundDefOf.TickHigh.PlayOneShotOnCamera();
                         InterfaceDropHaul(thing);
                     };
+                    Action eatFood = delegate
+                    {
+                        SoundDefOf.TickHigh.PlayOneShotOnCamera();
+                        InterfaceEatThis(thing);
+                    };
+                    floatOptionList.Add(new FloatMenuOption("CR_Eat".Translate(), eatFood));
                     floatOptionList.Add(new FloatMenuOption("DropThing".Translate(), dropApparel));
-                    floatOptionList.Add(new FloatMenuOption("DropThingHaul".Translate(), dropApparelHaul));
+                    floatOptionList.Add(new FloatMenuOption("CR_DropThingHaul".Translate(), dropApparelHaul));
 
                   //Action action = null;
                   //Apparel ap = thing as Apparel;
@@ -491,11 +511,11 @@ namespace Combat_Realism
             if (apparel != null)
             {
                 Pawn selPawnForGear = SelPawnForGear;
-                if (selPawnForGear.drafter.CanTakeOrderedJob())
+                if (selPawnForGear.jobs.CanTakeOrderedJob())
                 {
                     Job job = new Job(JobDefOf.RemoveApparel, apparel);
                     job.playerForced = true;
-                    selPawnForGear.drafter.TakeOrderedJob(job);
+                    selPawnForGear.jobs.TryTakeOrderedJob(job);
                 }
             }
             else if (thingWithComps != null && SelPawnForGear.equipment.AllEquipment.Contains(thingWithComps))
@@ -506,7 +526,7 @@ namespace Combat_Realism
             else if (!t.def.destroyOnDrop)
             {
                 Thing thing;
-                SelPawnForGear.inventory.container.TryDrop(t, SelPawnForGear.Position, ThingPlaceMode.Near, out thing, null);
+                SelPawnForGear.inventory.innerContainer.TryDrop(t, SelPawnForGear.Position, SelPawn.Map, ThingPlaceMode.Near, out thing, null);
             }
         }
 
@@ -517,12 +537,12 @@ namespace Combat_Realism
             if (apparel != null)
             {
                 Pawn selPawnForGear = SelPawn;
-                if (selPawnForGear.drafter.CanTakeOrderedJob())
+                if (selPawnForGear.jobs.CanTakeOrderedJob())
                 {
                     Job job = new Job(JobDefOf.RemoveApparel, apparel);
                     job.playerForced = true;
                     job.haulDroppedApparel = true;
-                    selPawnForGear.drafter.TakeOrderedJob(job);
+                    selPawnForGear.jobs.TryTakeOrderedJob(job);
                 }
             }
             else if (thingWithComps != null && SelPawn.equipment.AllEquipment.Contains(thingWithComps))
@@ -533,10 +553,26 @@ namespace Combat_Realism
             else if (!t.def.destroyOnDrop)
             {
                 Thing thing;
-                SelPawn.inventory.container.TryDrop(t, SelPawn.Position, ThingPlaceMode.Near, out thing);
+                SelPawn.inventory.innerContainer.TryDrop(t, SelPawn.Position, SelPawn.Map, ThingPlaceMode.Near, out thing);
             }
         }
 
+        private void InterfaceEatThis(Thing t)
+        {
+            ThingWithComps thingWithComps = t as ThingWithComps;
+            Thing food = t as Thing;
+            if (food != null && food.def.ingestible != null && food.def.ingestible.nutrition > 0)
+            {
+                Pawn selPawnForGear = SelPawn;
+                if (selPawnForGear.jobs.CanTakeOrderedJob() && selPawnForGear.RaceProps.EatsFood)
+                {
+                    Job job = new Job(JobDefOf.Ingest, food);
+                    job.count = FoodUtility.WillIngestStackCountOf(selPawnForGear, food.def);
+                    job.playerForced = true;
+                    selPawnForGear.jobs.TryTakeOrderedJob(job);
+                }
+            }
+        }
 
         #endregion Methods
     }

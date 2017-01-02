@@ -6,7 +6,7 @@
   <ThingDef Class="Combat_Realism.AmmoDef" Name="AmmoArrowBase" ParentName="AmmoBase" Abstract="True">
     <description>Simple arrow design with a cutting head attached to a wooden shaft.</description>
     <statBases>
-	  <Weight>0.11</Weight>
+	  <Mass>0.11</Mass>
 	  <Bulk>0.11</Bulk>
     </statBases>
     <thingCategories>
@@ -63,7 +63,7 @@
   <ThingDef Class="Combat_Realism.AmmoDef" Name="AmmoGreatArrowBase" ParentName="AmmoBase" Abstract="True">
     <description>Heavy arrow designed to be fired from a great bow.</description>
     <statBases>
-	  <Weight>0.17</Weight>
+	  <Mass>0.17</Mass>
 	  <Bulk>0.17</Bulk>
     </statBases>
     <thingCategories>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -26,9 +25,9 @@ namespace Combat_Realism
                 case HostilityResponseMode.Ignore:
                     return null;
                 case HostilityResponseMode.Attack:
-                    return this.TryGetAttackNearbyEnemyJob(pawn);
+                    return TryGetAttackNearbyEnemyJob(pawn);
                 case HostilityResponseMode.Flee:
-                    return this.TryGetFleeJob(pawn);
+                    return TryGetFleeJob(pawn);
                 default:
                     return null;
             }
@@ -48,6 +47,14 @@ namespace Combat_Realism
             }
             float maxDist = num;
             Thing thing = AttackTargetFinder.BestAttackTarget(pawn, TargetScanFlags.NeedLOSToPawns | TargetScanFlags.NeedLOSToNonPawns | TargetScanFlags.NeedReachable | TargetScanFlags.NeedThreat, null, 0f, maxDist, default(IntVec3), 3.40282347E+38f, false);
+            // TODO evaluate if this is necessary?
+            Pawn o = thing as Pawn;
+            if (o != null) if
+                    (o.Downed || o.health.InPainShock)
+                {
+                    return null;
+                }
+
             if (thing == null)
             {
                 return null;
@@ -73,7 +80,7 @@ namespace Combat_Realism
                         }
                         else if (compAmmo.curMagCount <= 0)
                         {
-                            Job job = compAmmo.ReloadJob();
+                            Job job = new Job(CR_JobDefOf.ReloadWeapon, pawn, pawn.equipment.Primary);
                             if (job != null)
                                 return job;
                         }
@@ -90,23 +97,23 @@ namespace Combat_Realism
             {
                 return null;
             }
-            JobGiver_ConfigurableHostilityResponse.tmpThreats.Clear();
-            List<IAttackTarget> potentialTargetsFor = Find.AttackTargetsCache.GetPotentialTargetsFor(pawn);
+            tmpThreats.Clear();
+            List<IAttackTarget> potentialTargetsFor = pawn.Map.attackTargetsCache.GetPotentialTargetsFor(pawn);
             for (int i = 0; i < potentialTargetsFor.Count; i++)
             {
                 IAttackTarget attackTarget = potentialTargetsFor[i];
                 if (!attackTarget.ThreatDisabled())
                 {
-                    JobGiver_ConfigurableHostilityResponse.tmpThreats.Add((Thing)attackTarget);
+                    tmpThreats.Add((Thing)attackTarget);
                 }
             }
-            if (!JobGiver_ConfigurableHostilityResponse.tmpThreats.Any<Thing>())
+            if (!tmpThreats.Any())
             {
                 Log.Warning(pawn.LabelShort + " decided to flee but there is no any threat around.");
                 return null;
             }
-            IntVec3 fleeDest = this.GetFleeDest(pawn, JobGiver_ConfigurableHostilityResponse.tmpThreats);
-            JobGiver_ConfigurableHostilityResponse.tmpThreats.Clear();
+            IntVec3 fleeDest = GetFleeDest(pawn, tmpThreats);
+            tmpThreats.Clear();
             return new Job(JobDefOf.FleeAndCower, fleeDest);
         }
 
@@ -115,12 +122,12 @@ namespace Combat_Realism
             IntVec3 bestPos = pawn.Position;
             float bestScore = -1f;
             TraverseParms traverseParms = TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false);
-            RegionTraverser.BreadthFirstTraverse(pawn.Position.GetRegion(), (Region from, Region reg) => reg.Allows(traverseParms, false), delegate (Region reg)
+            RegionTraverser.BreadthFirstTraverse(pawn.Position.GetRegion(pawn.Map), (from, reg) => reg.Allows(traverseParms, false), delegate (Region reg)
             {
                 Danger danger = reg.DangerFor(pawn);
                 foreach (IntVec3 current in reg.Cells)
                 {
-                    if (current.Standable())
+                    if (current.Standable(pawn.Map))
                     {
                         if (reg.portal == null)
                         {
@@ -139,7 +146,7 @@ namespace Combat_Realism
                             float f = Mathf.Min(num3, 23f);
                             float num4 = Mathf.Pow(f, 1.2f);
                             num4 *= Mathf.InverseLerp(50f, 0f, (current - pawn.Position).LengthHorizontal);
-                            if (current.GetRoom() != thing.GetRoom())
+                            if (current.GetRoom(pawn.Map) != thing.GetRoom())
                             {
                                 num4 *= 4.2f;
                             }
@@ -147,7 +154,7 @@ namespace Combat_Realism
                             {
                                 num4 *= 0.05f;
                             }
-                            if (Find.PawnDestinationManager.DestinationIsReserved(current, pawn))
+                            if (pawn.Map.pawnDestinationManager.DestinationIsReserved(current, pawn))
                             {
                                 num4 *= 0.5f;
                             }

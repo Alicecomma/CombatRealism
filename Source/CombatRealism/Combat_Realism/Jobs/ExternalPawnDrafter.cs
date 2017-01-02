@@ -26,16 +26,16 @@ namespace Combat_Realism
                 }
                 return;
             }
-            GenJob.ValidateJob( newJob );
+            pawn.CurJob.playerForced = true;
             if ( pawn.jobs.curJob != null && pawn.jobs.curJob.JobIsSameAs( newJob ) )
             {
                 return;
             }
             pawn.stances.CancelBusyStanceSoft();
-            Find.PawnDestinationManager.UnreserveAllFor( pawn );
+            pawn.Map.pawnDestinationManager.UnreserveAllFor( pawn );
             if ( newJob.def == JobDefOf.Goto )
             {
-                Find.PawnDestinationManager.ReserveDestinationFor( pawn, newJob.targetA.Cell );
+                pawn.Map.pawnDestinationManager.ReserveDestinationFor( pawn, newJob.targetA.Cell );
             }
             if ( pawn.jobs.debugLog )
             {
@@ -50,6 +50,10 @@ namespace Combat_Realism
             if ( pawn.jobs.curJob != null )
             {
                 pawn.jobs.curDriver.EndJobWith( JobCondition.InterruptForced );
+            }
+            else
+            {
+                pawn.jobs.CheckForJobOverride();
             }
         }
     }

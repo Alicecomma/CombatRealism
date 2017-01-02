@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-    <Weight.label>вес</Weight.label>
-    <Weight.description>Вес объекта, когда он в сумке или в кармане.</Weight.description>
-	<Weight.formatString>{0} кг</Weight.formatString>
+    <Mass.label>вес</Mass.label>
+    <Mass.description>Вес объекта, когда он в сумке или в кармане.</Mass.description>
+	<Mass.formatString>{0} кг</Mass.formatString>
 
     <Bulk.label>объём</Bulk.label>
     <Bulk.description>Объем, который предмет занимает, когда он переносится в сумке или кармане.</Bulk.description>

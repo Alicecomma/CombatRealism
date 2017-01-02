@@ -15,36 +15,51 @@ namespace Combat_Realism
 
         protected override void Impact(Thing hitThing)
         {
+            Map map = base.Map;
             base.Impact(hitThing);
             if (hitThing != null)
             {
                 int damageAmountBase = def.projectile.damageAmountBase;
-
-                BodyPartDamageInfo value;
+                ThingDef equipmentDef = this.equipmentDef;
                 DamageDef_CR damDefCR = def.projectile.damageDef as DamageDef_CR;
-                if (damDefCR != null && damDefCR.harmOnlyOutsideLayers) value = new BodyPartDamageInfo(null, BodyPartDepth.Outside);
-                else value = new BodyPartDamageInfo(null, null);
 
-                DamageInfo dinfo = new DamageInfo(def.projectile.damageDef, damageAmountBase, launcher, ExactRotation.eulerAngles.y, new BodyPartDamageInfo?(value), def);
+                DamageInfo dinfo = new DamageInfo(
+                    def.projectile.damageDef,
+                    damageAmountBase,
+                    ExactRotation.eulerAngles.y,
+                    launcher,
+                    null,
+                    equipmentDef);
+
+                if (damDefCR != null && damDefCR.harmOnlyOutsideLayers) dinfo.ForceHitPart.depth = BodyPartDepth.Outside;
 
                 ProjectilePropertiesCR propsCR = def.projectile as ProjectilePropertiesCR;
                 if (propsCR != null && !propsCR.secondaryDamage.NullOrEmpty())
                 {
+                    Log.Message("propsCR: " + propsCR.ToString());
                     // Get the correct body part
                     Pawn pawn = hitThing as Pawn;
                     if (pawn != null && def.projectile.damageDef.workerClass == typeof(DamageWorker_AddInjuryCR))
                     {
-                        dinfo = new DamageInfo(dinfo.Def,
+                        BodyPartRecord exactPartFromDamageInfo = DamageWorker_AddInjuryCR.GetExactPartFromDamageInfo(dinfo, pawn);
+                        dinfo = new DamageInfo(
+                            dinfo.Def,
                             dinfo.Amount,
-                            dinfo.Instigator,
                             dinfo.Angle,
-                            new BodyPartDamageInfo(DamageWorker_AddInjuryCR.GetExactPartFromDamageInfo(dinfo, pawn), false, (HediffDef)null),
-                            dinfo.Source);
+                            dinfo.Instigator,
+                            exactPartFromDamageInfo = (DamageWorker_AddInjuryCR.GetExactPartFromDamageInfo(dinfo, pawn)),
+                            dinfo.WeaponGear);
                     }
                     List<DamageInfo> dinfoList = new List<DamageInfo>() { dinfo };
                     foreach (SecondaryDamage secDamage in propsCR.secondaryDamage)
                     {
-                        dinfoList.Add(new DamageInfo(secDamage.def, secDamage.amount, dinfo.Instigator, dinfo.Part, dinfo.Source));
+                        dinfoList.Add(new DamageInfo(
+                            secDamage.def,
+                            secDamage.amount,
+                            dinfo.Angle,
+                            dinfo.Instigator,
+                            dinfo.ForceHitPart,
+                            dinfo.WeaponGear));
                     }
                     foreach (DamageInfo curDinfo in dinfoList)
                     {
@@ -58,8 +73,8 @@ namespace Combat_Realism
             }
             else
             {
-                SoundDefOf.BulletImpactGround.PlayOneShot(Position);
-                MoteMaker.MakeStaticMote(ExactPosition, ThingDefOf.Mote_ShotHit_Dirt, 1f);
+                SoundDefOf.BulletImpactGround.PlayOneShot(new TargetInfo(Position, map, false));
+                MoteMaker.MakeStaticMote(ExactPosition, map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
             }
         }
     }

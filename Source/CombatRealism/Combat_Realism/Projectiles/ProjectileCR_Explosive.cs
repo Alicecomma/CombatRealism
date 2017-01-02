@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Verse;
 using UnityEngine;
 
@@ -11,62 +11,64 @@ namespace Combat_Realism
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.LookValue<int>(ref ticksToDetonation, "ticksToDetonation", 0, false);
+            Scribe_Values.LookValue<int>(ref this.ticksToDetonation, "ticksToDetonation", 0, false);
         }
         public override void Tick()
         {
             base.Tick();
-            if (ticksToDetonation > 0)
+            if (this.ticksToDetonation > 0)
             {
-                ticksToDetonation--;
-                if (ticksToDetonation <= 0)
+                this.ticksToDetonation--;
+                if (this.ticksToDetonation <= 0)
                 {
-                    Explode();
+                    this.Explode();
                 }
             }
         }
         protected override void Impact(Thing hitThing)
         {
-            if (def.projectile.explosionDelay == 0)
+            if (this.def.projectile.explosionDelay == 0)
             {
-                Explode();
+                this.Explode();
                 return;
             }
-            landed = true;
-            ticksToDetonation = def.projectile.explosionDelay;
-            GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, def.projectile.damageDef, launcher.Faction);
+            this.landed = true;
+            this.ticksToDetonation = this.def.projectile.explosionDelay;
+            GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef, this.launcher.Faction);
         }
         protected virtual void Explode()
         {
-            Destroy(DestroyMode.Vanish);
+            Map map = base.Map;
+            this.Destroy(DestroyMode.Vanish);
             ProjectilePropertiesCR propsCR = def.projectile as ProjectilePropertiesCR;
-            ThingDef preExplosionSpawnThingDef = def.projectile.preExplosionSpawnThingDef;
-            float explosionSpawnChance = def.projectile.explosionSpawnChance;
-            GenExplosion.DoExplosion(Position,
-                def.projectile.explosionRadius,
-                def.projectile.damageDef,
-                launcher,
-                def.projectile.soundExplode,
-                def,
-                equipmentDef,
-                def.projectile.postExplosionSpawnThingDef,
-                def.projectile.explosionSpawnChance,
+            ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
+            float explosionSpawnChance = this.def.projectile.explosionSpawnChance;
+            GenExplosion.DoExplosion(base.Position,
+                map,
+                this.def.projectile.explosionRadius,
+                this.def.projectile.damageDef,
+                this.launcher,
+                this.def.projectile.soundExplode,
+                this.def,
+                this.equipmentDef,
+                this.def.projectile.postExplosionSpawnThingDef,
+                this.def.projectile.explosionSpawnChance,
                 1,
-                propsCR == null ? false : propsCR.damageAdjacentTiles,
+                false, // propsCR == null ? false : propsCR.damageAdjacentTiles,
                 preExplosionSpawnThingDef,
-                def.projectile.explosionSpawnChance,
+                this.def.projectile.explosionSpawnChance,
                 1);
-            ThrowBigExplode(Position.ToVector3Shifted() + Gen.RandomHorizontalVector(def.projectile.explosionRadius * 0.7f), def.projectile.explosionRadius * 0.6f);
+            ThrowBigExplode(base.Position.ToVector3Shifted() + Gen.RandomHorizontalVector(def.projectile.explosionRadius * 0.5f), base.Map, def.projectile.explosionRadius * 0.4f);
             CompExplosiveCR comp = this.TryGetComp<CompExplosiveCR>();
             if (comp != null)
             {
-                comp.Explode(launcher, Position);
+                comp.Explode(launcher, this.Position, Find.VisibleMap);
             }
         }
 
-        public static void ThrowBigExplode(Vector3 loc, float size)
+        public static void ThrowBigExplode(Vector3 loc, Map map, float size)
         {
-            if (!loc.ShouldSpawnMotesAt())
+            if (!loc.ShouldSpawnMotesAt(map))
             {
                 return;
             }
@@ -75,7 +77,7 @@ namespace Combat_Realism
             moteThrown.exactRotation = Rand.Range(0f, 0f);
             moteThrown.exactPosition = loc;
             moteThrown.SetVelocity((float)Rand.Range(6, 8), Rand.Range(0.002f, 0.003f));
-            GenSpawn.Spawn(moteThrown, loc.ToIntVec3());
+            GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
         }
     }
 }

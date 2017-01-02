@@ -9,13 +9,13 @@
       <shaderType>TransparentPostLight</shaderType>
 		</graphicData>
 		<projectile>
-			<speed>100</speed>
+			<speed>70</speed>
       <soundHitThickRoof>ArtilleryHitThickRoof</soundHitThickRoof>
       <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
       <soundAmbient>MortarRound_Ambient</soundAmbient>
       <flyOverhead>true</flyOverhead>
-			<dropsCasings>true</dropsCasings>
-			<casingMoteDefName>Mote_BigShell</casingMoteDefName>
+	  <dropsCasings>true</dropsCasings>
+	  <casingMoteDefName>Mote_BigShell</casingMoteDefName>
 		</projectile>
 	</ThingDef>
 
@@ -29,9 +29,8 @@
     <projectile>
       <damageDef>Bomb</damageDef>
       <damageAmountBase>150</damageAmountBase>
-      <speed>100</speed>
       <explosionRadius>1</explosionRadius>
-			<soundExplode>MortarBomb_Explode</soundExplode>
+	  <soundExplode>MortarBomb_Explode</soundExplode>
     </projectile>
 		<comps>
 			<li Class="Combat_Realism.CompProperties_ExplosiveCR">
@@ -39,9 +38,9 @@
 				<explosionDamageDef>Bomb</explosionDamageDef>
 				<explosionRadius>2.5</explosionRadius>
 				<fragments>
-					<Fragment_MortarSmall>450</Fragment_MortarSmall>
-					<Fragment_MortarMedium>270</Fragment_MortarMedium>
-					<Fragment_MortarLarge>90</Fragment_MortarLarge>
+					<Fragment_MortarSmall>100</Fragment_MortarSmall>
+					<Fragment_MortarMedium>60</Fragment_MortarMedium>
+					<Fragment_MortarLarge>20</Fragment_MortarLarge>
 				</fragments>
 	    <fragRange>10</fragRange>
 	  </li>
@@ -58,7 +57,6 @@
     <projectile>
       <damageDef>Flame</damageDef>
       <damageAmountBase>50</damageAmountBase>
-      <speed>100</speed>
       <explosionRadius>3.5</explosionRadius>
       <preExplosionSpawnThingDef>Napalm_Fuel</preExplosionSpawnThingDef>
       <explosionSpawnChance>0.5</explosionSpawnChance>
@@ -77,17 +75,16 @@
       <damageDef>EMP</damageDef>
       <damageAmountBase>80</damageAmountBase>
       <explosionRadius>5</explosionRadius>
+	  <soundExplode>MortarBomb_Explode</soundExplode>
     </projectile>
 		<comps>
 			<li Class="Combat_Realism.CompProperties_ExplosiveCR">
 				<explosionDamage>20</explosionDamage>
 				<explosionDamageDef>Electrical</explosionDamageDef>
 				<explosionRadius>5</explosionRadius>
-				<soundExplode>Explosion_Bomb</soundExplode>
 			</li>
 		</comps>
   </ThingDef>
-
 	<!-- ================== 90mm cannon shell ================== -->
 
 	<ThingDef Name="Base90mmCannonShell" ParentName="BaseBullet" Abstract="true">
@@ -95,8 +92,9 @@
       <shaderType>TransparentPostLight</shaderType>
 		</graphicData>
 		<projectile>
-			<speed>160</speed>
-      <soundExplode>MortarBomb_Explode</soundExplode>
+			<speed>155</speed>
+			<soundExplode>MortarBomb_Explode</soundExplode>
+	  		<flyOverhead>false</flyOverhead>
 			<dropsCasings>true</dropsCasings>
 			<casingMoteDefName>Mote_BigShell</casingMoteDefName>
 		</projectile>
@@ -112,6 +110,7 @@
     <projectile>
       <damageDef>Bullet</damageDef>
       <damageAmountBase>200</damageAmountBase>
+	  <soundExplode>MortarBomb_Explode</soundExplode>
     </projectile>
 		<comps>
 			<li Class="Combat_Realism.CompProperties_ExplosiveCR">
@@ -119,12 +118,11 @@
 				<explosionDamageDef>Bomb</explosionDamageDef>
 				<explosionRadius>1.5</explosionRadius>
 				<fragments>
-					<Fragment_MortarSmall>50</Fragment_MortarSmall>
-					<Fragment_MortarMedium>25</Fragment_MortarMedium>
-					<Fragment_MortarLarge>10</Fragment_MortarLarge>
+					<Fragment_MortarSmall>30</Fragment_MortarSmall>
+					<Fragment_MortarMedium>16</Fragment_MortarMedium>
+					<Fragment_MortarLarge>7</Fragment_MortarLarge>
 				</fragments>
 				<fragRange>7.5</fragRange>
-				<soundExplode>MortarBomb_Explode</soundExplode>
 			</li>
 		</comps>
   </ThingDef>
@@ -141,6 +139,7 @@
       <damageDef>Bomb</damageDef>
       <damageAmountBase>150</damageAmountBase>
       <explosionRadius>1</explosionRadius>
+		<soundExplode>MortarBomb_Explode</soundExplode>
     </projectile>
 		<comps>
 			<li Class="Combat_Realism.CompProperties_ExplosiveCR">
@@ -148,12 +147,11 @@
 				<explosionDamageDef>Bomb</explosionDamageDef>
 				<explosionRadius>2.5</explosionRadius>
 				<fragments>
-					<Fragment_MortarSmall>350</Fragment_MortarSmall>
-					<Fragment_MortarMedium>300</Fragment_MortarMedium>
-					<Fragment_MortarLarge>100</Fragment_MortarLarge>
+					<Fragment_MortarSmall>130</Fragment_MortarSmall>
+					<Fragment_MortarMedium>75</Fragment_MortarMedium>
+					<Fragment_MortarLarge>30</Fragment_MortarLarge>
 				</fragments>
 				<fragRange>10</fragRange>
-				<soundExplode>MortarBomb_Explode</soundExplode>
 			</li>
 		</comps>
   </ThingDef>
@@ -170,16 +168,15 @@
       <damageDef>EMP</damageDef>
       <damageAmountBase>80</damageAmountBase>
       <explosionRadius>5</explosionRadius>
+		<soundExplode>Explosion_Bomb</soundExplode>
     </projectile>
 		<comps>
 			<li Class="Combat_Realism.CompProperties_ExplosiveCR">
 				<explosionDamage>20</explosionDamage>
 				<explosionDamageDef>Electrical</explosionDamageDef>
 				<explosionRadius>5</explosionRadius>
-				<soundExplode>Explosion_Bomb</soundExplode>
 			</li>
 		</comps>
   </ThingDef>
-
 
 </ThingDefs>

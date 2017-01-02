@@ -12,10 +12,10 @@ namespace Combat_Realism
     {
         private const float maxFireSize = 1.75f;
 
-        public override void SpawnSetup()
+        public override void SpawnSetup(Map map)
         {
-            base.SpawnSetup();
-            List<Thing> list = new List<Thing>(Position.GetThingList());
+            base.SpawnSetup(map);
+            List<Thing> list = new List<Thing>(Position.GetThingList(map));
             foreach (Thing thing in list)
             {
                 if (thing.HasAttachment(ThingDefOf.Fire))
@@ -33,14 +33,14 @@ namespace Combat_Realism
 
         public override void Tick()
         {
-            if(Position.GetThingList().Any(x => x.def == ThingDefOf.FilthFireFoam))
+            if (Position.GetThingList(base.Map).Any(x => x.def == ThingDefOf.FilthFireFoam))
             {
                 if (!Destroyed)
                     Destroy();
             }
             else
             {
-                FireUtility.TryStartFireIn(Position, maxFireSize);
+                FireUtility.TryStartFireIn(Position, base.Map, maxFireSize);
             }
         }
     }

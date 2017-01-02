@@ -29,7 +29,7 @@ namespace Combat_Realism
             base.ExplosionAffectCell(explosion, c, damagedThings, canThrowMotes);
             if (def == DamageDefOf.Flame)
             {
-                FireUtility.TryStartFireIn(c, Rand.Range(0.2f, 0.6f));
+                FireUtility.TryStartFireIn(c, Find.VisibleMap, Rand.Range(0.2f, 0.6f));
             }
         }
     }

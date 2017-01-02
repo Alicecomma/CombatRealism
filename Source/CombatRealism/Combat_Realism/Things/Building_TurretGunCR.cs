@@ -19,7 +19,7 @@ namespace Combat_Realism
 
         protected int burstCooldownTicksLeft;
         public int burstWarmupTicksLeft;                                // Need this public so aim mode can modify it
-        protected TargetInfo currentTargetInt = TargetInfo.Invalid;
+        protected LocalTargetInfo currentTargetInt = LocalTargetInfo.Invalid;
         public Thing gun;
         public bool loaded = true;
         protected CompMannable mannableComp;
@@ -40,32 +40,32 @@ namespace Combat_Realism
         {
             get
             {
-                if (gun == null)
+                if (this.gun == null)
                 {
                     return null;
                 }
-                return GunCompEq.verbTracker.PrimaryVerb;
+                return this.GunCompEq.verbTracker.PrimaryVerb;
             }
         }
-        public override TargetInfo CurrentTarget
+        public override LocalTargetInfo CurrentTarget
         {
             get
             {
-                return currentTargetInt;
+                return this.currentTargetInt;
             }
         }
         public CompEquippable GunCompEq
         {
             get
             {
-                return gun.TryGetComp<CompEquippable>();
+                return this.gun.TryGetComp<CompEquippable>();
             }
         }
         private bool WarmingUp
         {
             get
             {
-                return burstWarmupTicksLeft > 0;
+                return this.burstWarmupTicksLeft > 0;
             }
         }
 
@@ -111,18 +111,18 @@ namespace Combat_Realism
         protected void BeginBurst()
         {
             ticksSinceLastBurst = 0;
-            GunCompEq.PrimaryVerb.TryStartCastOn(CurrentTarget, false);
+            this.GunCompEq.PrimaryVerb.TryStartCastOn(this.CurrentTarget, false, true);
         }
 
         protected void BurstComplete()
         {
-            if (def.building.turretBurstCooldownTicks >= 0)
+            if (this.def.building.turretBurstCooldownTime >= 0f)
             {
-                burstCooldownTicksLeft = def.building.turretBurstCooldownTicks;
+                this.burstCooldownTicksLeft = this.def.building.turretBurstCooldownTime.SecondsToTicks();
             }
             else
             {
-                burstCooldownTicksLeft = GunCompEq.PrimaryVerb.verbProps.defaultCooldownTicks;
+                this.burstCooldownTicksLeft = this.GunCompEq.PrimaryVerb.verbProps.defaultCooldownTime.SecondsToTicks();
             }
             if (compAmmo != null && compAmmo.curMagCount <= 0)
             {
@@ -132,34 +132,34 @@ namespace Combat_Realism
 
         public override void Draw()
         {
-            top.DrawTurret();
+            this.top.DrawTurret();
             base.Draw();
         }
 
         public override void DrawExtraSelectionOverlays()
         {
-            float range = GunCompEq.PrimaryVerb.verbProps.range;
+            float range = this.GunCompEq.PrimaryVerb.verbProps.range;
             if (range < 90f)
             {
-                GenDraw.DrawRadiusRing(Position, range);
+                GenDraw.DrawRadiusRing(base.Position, range);
             }
-            float minRange = GunCompEq.PrimaryVerb.verbProps.minRange;
+            float minRange = this.GunCompEq.PrimaryVerb.verbProps.minRange;
             if (minRange < 90f && minRange > 0.1f)
             {
-                GenDraw.DrawRadiusRing(Position, minRange);
+                GenDraw.DrawRadiusRing(base.Position, minRange);
             }
-            if (burstWarmupTicksLeft > 0)
+            if (this.burstWarmupTicksLeft > 0)
             {
-                int degreesWide = (int)((float)burstWarmupTicksLeft * 0.5f);
-                GenDraw.DrawAimPie(this, CurrentTarget, degreesWide, (float)def.size.x * 0.5f);
+                int degreesWide = (int)((float)this.burstWarmupTicksLeft * 0.5f);
+                GenDraw.DrawAimPie(this, this.CurrentTarget, degreesWide, (float)this.def.size.x * 0.5f);
             }
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.LookValue<int>(ref burstCooldownTicksLeft, "burstCooldownTicksLeft", 0, false);
-            Scribe_Values.LookValue<bool>(ref loaded, "loaded", false, false);
+            Scribe_Values.LookValue<int>(ref this.burstCooldownTicksLeft, "burstCooldownTicksLeft", 0, false);
+            Scribe_Values.LookValue<bool>(ref this.loaded, "loaded", false, false);
 
             // Look new variables
             Scribe_Values.LookValue(ref burstWarmupTicksLeft, "burstWarmupTicksLeft", 0);
@@ -175,19 +175,19 @@ namespace Combat_Realism
             {
                 stringBuilder.AppendLine(inspectString);
             }
-            stringBuilder.AppendLine("GunInstalled".Translate() + ": " + gun.LabelCap);
-            if (GunCompEq.PrimaryVerb.verbProps.minRange > 0f)
+            stringBuilder.AppendLine("GunInstalled".Translate() + ": " + this.gun.LabelCap);
+            if (this.GunCompEq.PrimaryVerb.verbProps.minRange > 0f)
             {
-                stringBuilder.AppendLine("MinimumRange".Translate() + ": " + GunCompEq.PrimaryVerb.verbProps.minRange.ToString("F0"));
+                stringBuilder.AppendLine("MinimumRange".Translate() + ": " + this.GunCompEq.PrimaryVerb.verbProps.minRange.ToString("F0"));
             }
 
             if (isReloading)
             {
                 stringBuilder.AppendLine("CR_TurretReloading".Translate());
             }
-            else if (burstCooldownTicksLeft > 0)
+            else if (this.burstCooldownTicksLeft > 0)
             {
-                stringBuilder.AppendLine("CanFireIn".Translate() + ": " + burstCooldownTicksLeft.TickstoSecondsString());
+                stringBuilder.AppendLine("CanFireIn".Translate() + ": " + this.burstCooldownTicksLeft.TickstoSecondsString());
             }
 
             if (compAmmo != null && compAmmo.Props.ammoSet != null)
@@ -215,53 +215,53 @@ namespace Combat_Realism
             Pawn pawn = t as Pawn;
             if (pawn != null)
             {
-                if (GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead)
+                if (this.GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead)
                 {
-                    RoofDef roofDef = Find.RoofGrid.RoofAt(t.Position);
+                    RoofDef roofDef = base.Map.roofGrid.RoofAt(t.Position);
                     if (roofDef != null && roofDef.isThickRoof)
                     {
                         return false;
                     }
                 }
-                if (mannableComp == null)
+                if (this.mannableComp == null)
                 {
-                    return !GenAI.MachinesLike(Faction, pawn);
+                    return !GenAI.MachinesLike(base.Faction, pawn);
                 }
             }
             return true;
         }
 
-        public override void OrderAttack(TargetInfo targ)
+        public override void OrderAttack(LocalTargetInfo targ)
         {
-            if ((targ.Cell - Position).LengthHorizontal < GunCompEq.PrimaryVerb.verbProps.minRange)
+            if ((targ.Cell - base.Position).LengthHorizontal < this.GunCompEq.PrimaryVerb.verbProps.minRange)
             {
                 Messages.Message("MessageTargetBelowMinimumRange".Translate(), this, MessageSound.RejectInput);
                 return;
             }
-            if ((targ.Cell - Position).LengthHorizontal > GunCompEq.PrimaryVerb.verbProps.range)
+            if ((targ.Cell - base.Position).LengthHorizontal > this.GunCompEq.PrimaryVerb.verbProps.range)
             {
                 Messages.Message("MessageTargetBeyondMaximumRange".Translate(), this, MessageSound.RejectInput);
                 return;
             }
-            forcedTarget = targ;
+            this.forcedTarget = targ;
         }
 
-        public override void SpawnSetup()
+        public override void SpawnSetup(Map map)
         {
-            base.SpawnSetup();
-            powerComp = GetComp<CompPowerTrader>();
-            mannableComp = GetComp<CompMannable>();
+            base.SpawnSetup(map);
+            this.powerComp = base.GetComp<CompPowerTrader>();
+            this.mannableComp = base.GetComp<CompMannable>();
             if (gun == null)
             {
-                gun = ThingMaker.MakeThing(def.building.turretGunDef, null);
+                this.gun = ThingMaker.MakeThing(this.def.building.turretGunDef, null);
             }
-            for (int i = 0; i < GunCompEq.AllVerbs.Count; i++)
+            for (int i = 0; i < this.GunCompEq.AllVerbs.Count; i++)
             {
-                Verb verb = GunCompEq.AllVerbs[i];
+                Verb verb = this.GunCompEq.AllVerbs[i];
                 verb.caster = this;
-                verb.castCompleteCallback = new Action(BurstComplete);
+                verb.castCompleteCallback = new Action(this.BurstComplete);
             }
-            top = new TurretTopCR(this);
+            this.top = new TurretTopCR(this);
 
             // Callback for ammo comp
             if (compAmmo != null)
@@ -275,73 +275,73 @@ namespace Combat_Realism
         {
             base.Tick();
             ticksSinceLastBurst++;
-            if (powerComp != null && !powerComp.PowerOn)
+            if (this.powerComp != null && !this.powerComp.PowerOn)
             {
                 return;
             }
-            if (mannableComp != null && !mannableComp.MannedNow)
+            if (this.mannableComp != null && !this.mannableComp.MannedNow)
             {
                 return;
             }
-            GunCompEq.verbTracker.VerbsTick();
-            if (stunner.Stunned)
+            this.GunCompEq.verbTracker.VerbsTick();
+            if (this.stunner.Stunned)
             {
                 return;
             }
-            if (GunCompEq.PrimaryVerb.state == VerbState.Bursting)
+            if (this.GunCompEq.PrimaryVerb.state == VerbState.Bursting)
             {
                 return;
             }
-            if (WarmingUp)
+            if (this.WarmingUp)
             {
-                burstWarmupTicksLeft--;
-                if (burstWarmupTicksLeft == 0)
+                this.burstWarmupTicksLeft--;
+                if (this.burstWarmupTicksLeft == 0)
                 {
-                    BeginBurst();
+                    this.BeginBurst();
                 }
             }
             else
             {
-                if (burstCooldownTicksLeft > 0)
+                if (this.burstCooldownTicksLeft > 0)
                 {
-                    burstCooldownTicksLeft--;
+                    this.burstCooldownTicksLeft--;
                 }
-                if (burstCooldownTicksLeft == 0)
+                if (this.burstCooldownTicksLeft == 0)
                 {
-                    TryStartShootSomething();
+                    this.TryStartShootSomething();
                 }
             }
-            top.TurretTopTick();
+            this.top.TurretTopTick();
         }
 
-        protected TargetInfo TryFindNewTarget()
+        protected LocalTargetInfo TryFindNewTarget()
         {
             Thing searcher;
             Faction faction;
-            if (mannableComp != null && mannableComp.MannedNow)
+            if (this.mannableComp != null && this.mannableComp.MannedNow)
             {
-                searcher = mannableComp.ManningPawn;
-                faction = mannableComp.ManningPawn.Faction;
+                searcher = this.mannableComp.ManningPawn;
+                faction = this.mannableComp.ManningPawn.Faction;
             }
             else
             {
                 searcher = this;
-                faction = Faction;
+                faction = base.Faction;
             }
-            if (GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead && faction.HostileTo(Faction.OfPlayer) && Rand.Value < 0.5f && Find.ListerBuildings.allBuildingsColonist.Count > 0)
+            if (this.GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead && faction.HostileTo(Faction.OfPlayer) && Rand.Value < 0.5f && base.Map.listerBuildings.allBuildingsColonist.Count > 0)
             {
-                return Find.ListerBuildings.allBuildingsColonist.RandomElement<Building>();
+                return base.Map.listerBuildings.allBuildingsColonist.RandomElement<Building>();
             }
             TargetScanFlags targetScanFlags = TargetScanFlags.NeedThreat;
-            if (!GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead)
+            if (!this.GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead)
             {
                 targetScanFlags |= TargetScanFlags.NeedLOSToAll;
             }
-            if (GunCompEq.PrimaryVerb.verbProps.ai_IsIncendiary)
+            if (this.GunCompEq.PrimaryVerb.verbProps.ai_IsIncendiary)
             {
                 targetScanFlags |= TargetScanFlags.NeedNonBurning;
             }
-            return AttackTargetFinder.BestShootTargetFromCurrentPosition(searcher, new Predicate<Thing>(IsValidTarget), GunCompEq.PrimaryVerb.verbProps.range, GunCompEq.PrimaryVerb.verbProps.minRange, targetScanFlags);
+            return AttackTargetFinder.BestShootTargetFromCurrentPosition(searcher, new Predicate<Thing>(this.IsValidTarget), this.GunCompEq.PrimaryVerb.verbProps.range, this.GunCompEq.PrimaryVerb.verbProps.minRange, targetScanFlags);
         }
 
         protected void TryStartShootSomething()
@@ -349,36 +349,42 @@ namespace Combat_Realism
             // Check for ammo first
             if (compAmmo != null && (isReloading || (mannableComp == null && compAmmo.curMagCount <= 0))) return;
 
-            if (forcedTarget.ThingDestroyed)
+            if (this.forcedTarget.ThingDestroyed)
             {
-                forcedTarget = null;
+                this.forcedTarget = null;
             }
-            if (GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead && Find.RoofGrid.Roofed(Position))
+            if (this.GunCompEq.PrimaryVerb.verbProps.projectileDef.projectile.flyOverhead && base.Map.roofGrid.Roofed(base.Position))
             {
                 return;
             }
-            bool isValid = currentTargetInt.IsValid;
-            if (forcedTarget.IsValid)
+            bool isValid = this.currentTargetInt.IsValid;
+            if (this.forcedTarget.IsValid)
             {
-                currentTargetInt = forcedTarget;
+                this.currentTargetInt = this.forcedTarget;
             }
             else
             {
-                currentTargetInt = TryFindNewTarget();
+                this.currentTargetInt = this.TryFindNewTarget();
             }
-            if (!isValid && currentTargetInt.IsValid)
+            if (!isValid && this.currentTargetInt.IsValid)
             {
-                SoundDefOf.TurretAcquireTarget.PlayOneShot(Position);
+                SoundDefOf.TurretAcquireTarget.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
             }
-            if (currentTargetInt.IsValid)
+            if (this.currentTargetInt.IsValid)
             {
-                if (AttackVerb.verbProps.warmupTicks > 0)
+                if (AttackVerb.verbProps.warmupTime > 0)
                 {
-                    burstWarmupTicksLeft = AttackVerb.verbProps.warmupTicks;
+                    this.burstWarmupTicksLeft = AttackVerb.verbProps.warmupTime.SecondsToTicks();
                 }
+                /*
+                if (this.def.building.turretBurstWarmupTime > 0f)
+                {
+                    this.burstWarmupTicksLeft = this.def.building.turretBurstWarmupTime.SecondsToTicks();
+                }
+                */
                 else
                 {
-                    BeginBurst();
+                    this.BeginBurst();
                 }
             }
         }
@@ -400,9 +406,9 @@ namespace Combat_Realism
                     Thing droppedAmmo;
                     int amount = compAmmo.Props.magazineSize;
                     if (compAmmo.currentAmmo == compAmmo.selectedAmmo) amount -= compAmmo.curMagCount;
-                    if (inventory.container.TryDrop(ammo, Position, ThingPlaceMode.Direct, Mathf.Min(ammo.stackCount, amount), out droppedAmmo))
+                    if (inventory.container.TryDrop(ammo, this.Position, this.Map, ThingPlaceMode.Direct, Mathf.Min(ammo.stackCount, amount), out droppedAmmo))
                     {
-                        reloadJob = new Job(CR_JobDefOf.ReloadTurret, this, droppedAmmo) { maxNumToCarry = droppedAmmo.stackCount };
+                        reloadJob = new Job(DefDatabase<JobDef>.GetNamed("ReloadTurret"), this, droppedAmmo) { count = droppedAmmo.stackCount };
                     }
                 }
             }
@@ -449,7 +455,7 @@ namespace Combat_Realism
                     icon = ContentFinder<Texture2D>.Get("UI/Commands/Halt", true),
                     action = new Action(delegate
                     {
-                        forcedTarget = TargetInfo.Invalid;
+                        forcedTarget = LocalTargetInfo.Invalid;
                         SoundDefOf.TickLow.PlayOneShotOnCamera();
                     }),
                     hotKey = KeyBindingDefOf.Misc5

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
-using UnityEngine;
 
 namespace Combat_Realism
 {
     class JobGiver_RunForCover : ThinkNode_JobGiver
     {
-        private const float maxCoverDist = 15f; //Maximum distance to run for cover to
+        public const float maxCoverDist = 15f; //Maximum distance to run for cover to
 
         protected override Job TryGiveJob(Pawn pawn)
         {
@@ -38,7 +35,7 @@ namespace Combat_Realism
             }
 
             //Tell pawn to move to position
-            Find.PawnDestinationManager.ReserveDestinationFor(pawn, coverPosition);
+            pawn.Map.pawnDestinationManager.ReserveDestinationFor(pawn, coverPosition);
             return new Job(CR_JobDefOf.RunForCover, coverPosition)
             {
                 locomotionUrgency = LocomotionUrgency.Sprint,
@@ -46,13 +43,13 @@ namespace Combat_Realism
             };
         }
 
-        private bool GetCoverPositionFrom(Pawn pawn, IntVec3 fromPosition, float maxDist, out IntVec3 coverPosition)
+        public static bool GetCoverPositionFrom(Pawn pawn, IntVec3 fromPosition, float maxDist, out IntVec3 coverPosition)
         {
             //First check if we have cover already
             Vector3 coverVec = (fromPosition - pawn.Position).ToVector3().normalized;
             IntVec3 coverCell = (pawn.Position.ToVector3Shifted() + coverVec).ToIntVec3();
-            Thing cover = coverCell.GetCover();
-            if (pawn.Position.Standable() && cover != null && !pawn.Position.ContainsStaticFire())
+            Thing cover = coverCell.GetCover(pawn.Map);
+            if (pawn.Position.Standable(pawn.Map) && cover != null && !pawn.Position.ContainsStaticFire(pawn.Map))
             {
                 coverPosition = pawn.Position;
                 return true;
@@ -66,14 +63,14 @@ namespace Combat_Realism
             {
                 //Sanity checks
                 if (cell.IsValid 
-                    && cell.Standable() 
-                    && !Find.PawnDestinationManager.DestinationIsReserved(cell)
+                    && cell.Standable(pawn.Map) 
+                    && !pawn.Map.pawnDestinationManager.DestinationIsReserved(cell)
                     && pawn.CanReach(cell, PathEndMode.ClosestTouch, Danger.Deadly, false)
                     )
                 {
                     coverVec = (fromPosition - cell).ToVector3().normalized;    //The direction in which we want to have cover
                     coverCell = (cell.ToVector3Shifted() + coverVec).ToIntVec3();   //The cell we check for cover
-                    cover = coverCell.GetCover();
+                    cover = coverCell.GetCover(pawn.Map);
                     if (cover != null)
                     {
                         //If the cover is a plant we store the location for later

@@ -11,65 +11,66 @@ namespace Combat_Realism
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.LookValue<int>(ref ticksToDetonation, "ticksToDetonation", 0, false);
+            Scribe_Values.LookValue<int>(ref this.ticksToDetonation, "ticksToDetonation", 0, false);
         }
         public override void Tick()
         {
             base.Tick();
-            if (ticksToDetonation > 0)
+            if (this.ticksToDetonation > 0)
             {
-                ticksToDetonation--;
-                if (ticksToDetonation <= 0)
+                this.ticksToDetonation--;
+                if (this.ticksToDetonation <= 0)
                 {
-                    Explode();
+                    this.Explode();
                 }
             }
             if (--TicksforAppearence == 0)
             {
-                ThrowFireTrail(Position.ToVector3Shifted(), 0.5f);
+                Projectile_FireTrail.ThrowFireTrail(base.Position.ToVector3Shifted(), base.Map, 0.5f);
                 TicksforAppearence = 5;
             }
         }
         protected override void Impact(Thing hitThing)
         {
-            if (def.projectile.explosionDelay == 0)
+            if (this.def.projectile.explosionDelay == 0)
             {
-                Explode();
+                this.Explode();
                 return;
             }
-            landed = true;
-            ticksToDetonation = def.projectile.explosionDelay;
-            GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, def.projectile.damageDef, launcher.Faction);
+            this.landed = true;
+            this.ticksToDetonation = this.def.projectile.explosionDelay;
+            GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef, this.launcher.Faction);
         }
         protected virtual void Explode()
         {
-            Destroy(DestroyMode.Vanish);
+            this.Destroy(DestroyMode.Vanish);
             ProjectilePropertiesCR propsCR = def.projectile as ProjectilePropertiesCR;
-            ThingDef preExplosionSpawnThingDef = def.projectile.preExplosionSpawnThingDef;
-            float explosionSpawnChance = def.projectile.explosionSpawnChance;
-            GenExplosion.DoExplosion(Position,
-                def.projectile.explosionRadius,
-                def.projectile.damageDef,
-                launcher,
-                def.projectile.soundExplode,
-                def,
-                equipmentDef,
-                def.projectile.postExplosionSpawnThingDef,
-                def.projectile.explosionSpawnChance,
+            ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
+            float explosionSpawnChance = this.def.projectile.explosionSpawnChance;
+            GenExplosion.DoExplosion(base.Position,
+                base.Map,
+                this.def.projectile.explosionRadius,
+                this.def.projectile.damageDef,
+                this.launcher,
+                this.def.projectile.soundExplode,
+                this.def,
+                this.equipmentDef,
+                this.def.projectile.postExplosionSpawnThingDef,
+                this.def.projectile.explosionSpawnChance,
                 1,
                 propsCR == null ? false : propsCR.damageAdjacentTiles,
                 preExplosionSpawnThingDef,
-                def.projectile.explosionSpawnChance,
+                this.def.projectile.explosionSpawnChance,
                 1);
             CompExplosiveCR comp = this.TryGetComp<CompExplosiveCR>();
             if (comp != null)
             {
-                comp.Explode(launcher, Position);
+                comp.Explode(launcher, this.Position, Find.VisibleMap);
             }
         }
-        public static void ThrowFireTrail(Vector3 loc, float size)
+        public static void ThrowFireTrail(Vector3 loc, Map map, float size)
         {
-            if (!loc.ShouldSpawnMotesAt() || MoteCounter.SaturatedLowPriority)
+            if (!loc.ShouldSpawnMotesAt(map))
             {
                 return;
             }
@@ -78,7 +79,7 @@ namespace Combat_Realism
             moteThrown.exactRotation = Rand.Range(-0.5f, 0.5f);
             moteThrown.exactPosition = loc;
             moteThrown.SetVelocity((float)Rand.Range(30, 40), Rand.Range(0.008f, 0.012f));
-            GenSpawn.Spawn(moteThrown, loc.ToIntVec3());
+            GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
         }
     }
 }
